@@ -1,0 +1,26 @@
+# Database (local only)
+vire_data.db
+vire_data.db-shm
+vire_data.db-wal
+
+# Logs
+*.log
+vire_backtest_*.log
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual env
+venv/
+.venv/
+
+# Environment variables (secrets)
+.env
+*.env
+
+# VS Code local state
+.vscode/settings.json
