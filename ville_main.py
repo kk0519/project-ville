@@ -58,6 +58,7 @@ VERBOSE_MARKETS             = False  # True = print all 50 markets; False = edge
 PHASE13_CAPITAL_JPY         = 10_000_000   # 1,000万円 scale capital model
 PHASE13_DEPTH_ENABLED       = True         # fetch order book depth for edge markets
 PHASE13_NUM_ACCOUNTS        = 3            # accounts to distribute across
+WEB_SYNC_INTERVAL_SEC       = 600          # regenerate GitHub Pages every 10 minutes
 
 # ── Logging setup ────────────────────────────────────────────────
 logging.basicConfig(
@@ -164,6 +165,57 @@ def _refresh_ai_pairs_bg(questions: list[str]):
 def _notify_bg(fn, *args, **kwargs):
     """Fire-and-forget wrapper: run notification in daemon thread."""
     threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
+
+
+def _web_sync_worker():
+    """
+    Background daemon: regenerate docs/index.html from live DB every
+    WEB_SYNC_INTERVAL_SEC seconds, then git commit+push only if changed.
+    Runs forever — no AI calls, no heavy computation.
+    """
+    import subprocess
+    from jinja2 import Environment
+
+    # Lazy import to avoid circular dep at module level
+    from ville_web import MILESTONES, CURRENT_PHASE, HTML, get_dashboard_data
+
+    docs_path = Path(__file__).parent / "docs" / "index.html"
+
+    while True:
+        time.sleep(WEB_SYNC_INTERVAL_SEC)
+        try:
+            data = get_dashboard_data()
+            env  = Environment()
+            env.globals["max"] = max
+            html = env.from_string(HTML).render(
+                milestones=MILESTONES, data=data, current_phase=CURRENT_PHASE
+            )
+            new_bytes = html.encode("utf-8")
+
+            # Only write + push if content actually changed
+            if docs_path.exists() and docs_path.read_bytes() == new_bytes:
+                continue
+
+            docs_path.write_bytes(new_bytes)
+
+            repo = str(Path(__file__).parent)
+            subprocess.run(
+                ["git", "-C", repo, "add", "docs/index.html"],
+                capture_output=True, timeout=15
+            )
+            result = subprocess.run(
+                ["git", "-C", repo, "commit", "-m",
+                 f"auto: web sync {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}"],
+                capture_output=True, timeout=15
+            )
+            if result.returncode == 0:
+                subprocess.run(
+                    ["git", "-C", repo, "push", "origin", "main"],
+                    capture_output=True, timeout=30
+                )
+                logging.info("WEB_SYNC | pushed to GitHub Pages")
+        except Exception as e:
+            logging.warning(f"WEB_SYNC_FAIL | {e}")
 
 
 def check_volatility_singularity(markets: list[MarketData], cycle: int):
@@ -526,6 +578,10 @@ def main():
         target=_refresh_ai_pairs_bg, args=(questions,), daemon=True
     ).start()
     print(f"{CYAN}[AI] 論理依存ペア検出をバックグラウンドで開始...{RESET}")
+
+    # ── Background web sync (GitHub Pages auto-update) ────────────
+    threading.Thread(target=_web_sync_worker, daemon=True).start()
+    print(f"{CYAN}[WEB] GitHub Pages自動更新: {WEB_SYNC_INTERVAL_SEC}秒間隔{RESET}")
 
     # ── Notification channel status ───────────────────────────────
     channels = channels_active()
