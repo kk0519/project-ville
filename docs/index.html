@@ -219,43 +219,34 @@
     <div class="phase-card">
       <h3>
         <span class="phase-num">Ph.10</span>
-        長期無人稼働の堅牢化
+        🛠️ 無人フォワードテスト（現在地）
       </h3>
+      <p style="color:var(--muted);font-size:11px;margin-bottom:12px;line-height:1.7">システムを止めずに稼働させ「世界の歪み方」の統計を取る。お金は1円もリスクにさらさない。EAでいうデモ口座フォワードテスト。</p>
       
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>Polymarket API接続・15市場リアルタイム監視</span>
+      <div class="task ">
+        <span class="icon">⬜</span>
+        <span>24時間連続稼働時のWSL/Pythonメモリ監視（gc.collect()が効いているか）</span>
       </div>
       
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>エッジ検知（SUM≤0.98）アルゴリズム実装</span>
+      <div class="task ">
+        <span class="icon">⬜</span>
+        <span>Discord通知の頻度が適切か（ノイズなく本当に動いた時だけ鳴るか）の確認</span>
       </div>
       
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>SQLite永続化（snapshots/edge_events/trades）</span>
+      <div class="task ">
+        <span class="icon">⬜</span>
+        <span>経済指標発表時・週末スポーツイベント時の市場の動きとDeepSeek事後推論ログの精査</span>
       </div>
       
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>ハートビート60分間隔ロギング</span>
-      </div>
-      
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>ボラティリティ特異点検知（3%/5分）</span>
-      </div>
-      
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>日次セルフメンテナンス（ログローテーション/GC/DBクリーンアップ）</span>
+      <div class="task ">
+        <span class="icon">⬜</span>
+        <span>1週間経過後 ville_research.py --trend で時間帯・ジャンル別「歪み発生傾向」レポート化</span>
       </div>
       
       <div class="progress-bar">
-        <div class="progress-fill" style="width:100%"></div>
+        <div class="progress-fill" style="width:0%"></div>
       </div>
-      <div class="pct">6/6 — 100%</div>
+      <div class="pct">0/4 — 0%</div>
     </div>
     
     
@@ -264,38 +255,39 @@
     <div class="phase-card">
       <h3>
         <span class="phase-num">Ph.11</span>
-        通知チャネル完全統合
+        💻 テスト実弾運用（指先の感覚を研ぎ澄ます）
       </h3>
+      <p style="color:var(--muted);font-size:11px;margin-bottom:12px;line-height:1.7">Polygonチェーン等のスマートコントラクトへ署名・発注する執行モジュールを開発。資金5〜10万円は約定力とガス代を計測するための授業料。</p>
       
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>Discord Webhook通知</span>
+      <div class="task ">
+        <span class="icon">⬜</span>
+        <span>modules/executor.py（実発注モジュール）の新規設計・実装</span>
       </div>
       
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>LINE Messaging API移行（LINE Notify廃止対応）</span>
+      <div class="task ">
+        <span class="icon">⬜</span>
+        <span>Web3ウォレット（秘密鍵）を安全に扱う環境変数・暗号化セキュリティ設定</span>
       </div>
       
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>Gmail SMTP通知</span>
+      <div class="task ">
+        <span class="icon">⬜</span>
+        <span>Polymarket 注文実行APIの叩き込みテスト</span>
       </div>
       
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>スタートアップハートビート通知</span>
+      <div class="task ">
+        <span class="icon">⬜</span>
+        <span>1取引あたり3,000〜5,000円の少額実弾でAPI注文・約定テスト</span>
       </div>
       
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>エッジ異常・三角裁定・ボラ特異点 3トリガー配線</span>
+      <div class="task ">
+        <span class="icon">⬜</span>
+        <span>スリッページ計測とロジックへのフィードバック</span>
       </div>
       
       <div class="progress-bar">
-        <div class="progress-fill" style="width:100%"></div>
+        <div class="progress-fill" style="width:0%"></div>
       </div>
-      <div class="pct">5/5 — 100%</div>
+      <div class="pct">0/5 — 0%</div>
     </div>
     
     
@@ -304,38 +296,29 @@
     <div class="phase-card">
       <h3>
         <span class="phase-num">Ph.12</span>
-        裁定ロジック厳格化
+        📈 本格実弾運用（ケリー基準の実戦投入）
       </h3>
+      <p style="color:var(--muted);font-size:11px;margin-bottom:12px;line-height:1.7">システムが自動で資金管理（ケリー基準）を行い、エッジの大きさに合わせて最適ロットを張る真の自動運用フェーズ。資金100〜300万円。</p>
       
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>conditionId→numeric ID修正（全市場フェッチ成功）</span>
+      <div class="task ">
+        <span class="icon">⬜</span>
+        <span>資金残高（Balance）をAPIでリアルタイム取得しケリー基準と完全連動</span>
       </div>
       
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>DeepSeek AI論理依存ペア検出（24hキャッシュ）</span>
+      <div class="task ">
+        <span class="icon">⬜</span>
+        <span>APIダウン・予期せぬエラー時に全ポジション自動清算または安全ホールドする緊急停止スクリプト配線</span>
       </div>
       
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>三角裁定：AI判定関連ペアのみに限定</span>
-      </div>
-      
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>論理矛盾チェック：隣接比較廃止→AI対象ペアのみ</span>
-      </div>
-      
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>手数料2%控除後純利益計算・99.9%異常値除去</span>
+      <div class="task ">
+        <span class="icon">⬜</span>
+        <span>利益・損失推移をSQLiteに自動記録しダッシュボードに「資産曲線グラフ」を追加</span>
       </div>
       
       <div class="progress-bar">
-        <div class="progress-fill" style="width:100%"></div>
+        <div class="progress-fill" style="width:0%"></div>
       </div>
-      <div class="pct">5/5 — 100%</div>
+      <div class="pct">0/3 — 0%</div>
     </div>
     
     
@@ -344,43 +327,24 @@
     <div class="phase-card">
       <h3>
         <span class="phase-num">Ph.13</span>
-        Webダッシュボード
+        🚀 大資本スケール運用（1,000万円の世界）
       </h3>
+      <p style="color:var(--muted);font-size:11px;margin-bottom:12px;line-height:1.7">板の厚み監視・複数口座分散により、不眠不休で働く自律型資産運用会社として完成。資金1,000万円。</p>
       
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>Flask Webサーバー（ville_main.pyと独立プロセス）</span>
+      <div class="task ">
+        <span class="icon">⬜</span>
+        <span>板の厚み（マーケットデプス）監視機能追加（1,000万円注文による価格影響チェック）</span>
       </div>
       
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>ロードマップ進捗チェックリスト表示</span>
-      </div>
-      
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>SQLiteリアルタイムデータ表示</span>
-      </div>
-      
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>ハートビート・ボラティリティ履歴表示</span>
-      </div>
-      
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>ダークモードUI（エンジニアライク）</span>
-      </div>
-      
-      <div class="task done">
-        <span class="icon">✅</span>
-        <span>60秒オートリフレッシュ</span>
+      <div class="task ">
+        <span class="icon">⬜</span>
+        <span>複数アカウントまたは複数取引所への資金分散アルゴリズムの実実装</span>
       </div>
       
       <div class="progress-bar">
-        <div class="progress-fill" style="width:100%"></div>
+        <div class="progress-fill" style="width:0%"></div>
       </div>
-      <div class="pct">6/6 — 100%</div>
+      <div class="pct">0/2 — 0%</div>
     </div>
     
   </div>

@@ -22,48 +22,48 @@ LOG_PATH = Path(__file__).parent / "ville_backtest.log"
 MILESTONES = [
     {
         "phase": 10,
-        "title": "長期無人稼働の堅牢化",
+        "emoji": "🛠️",
+        "title": "無人フォワードテスト（現在地）",
+        "summary": "システムを止めずに稼働させ「世界の歪み方」の統計を取る。お金は1円もリスクにさらさない。EAでいうデモ口座フォワードテスト。",
         "tasks": [
-            ("Polymarket API接続・15市場リアルタイム監視", True),
-            ("エッジ検知（SUM≤0.98）アルゴリズム実装", True),
-            ("SQLite永続化（snapshots/edge_events/trades）", True),
-            ("ハートビート60分間隔ロギング", True),
-            ("ボラティリティ特異点検知（3%/5分）", True),
-            ("日次セルフメンテナンス（ログローテーション/GC/DBクリーンアップ）", True),
+            ("24時間連続稼働時のWSL/Pythonメモリ監視（gc.collect()が効いているか）", False),
+            ("Discord通知の頻度が適切か（ノイズなく本当に動いた時だけ鳴るか）の確認", False),
+            ("経済指標発表時・週末スポーツイベント時の市場の動きとDeepSeek事後推論ログの精査", False),
+            ("1週間経過後 ville_research.py --trend で時間帯・ジャンル別「歪み発生傾向」レポート化", False),
         ],
     },
     {
         "phase": 11,
-        "title": "通知チャネル完全統合",
+        "emoji": "💻",
+        "title": "テスト実弾運用（指先の感覚を研ぎ澄ます）",
+        "summary": "Polygonチェーン等のスマートコントラクトへ署名・発注する執行モジュールを開発。資金5〜10万円は約定力とガス代を計測するための授業料。",
         "tasks": [
-            ("Discord Webhook通知", True),
-            ("LINE Messaging API移行（LINE Notify廃止対応）", True),
-            ("Gmail SMTP通知", True),
-            ("スタートアップハートビート通知", True),
-            ("エッジ異常・三角裁定・ボラ特異点 3トリガー配線", True),
+            ("modules/executor.py（実発注モジュール）の新規設計・実装", False),
+            ("Web3ウォレット（秘密鍵）を安全に扱う環境変数・暗号化セキュリティ設定", False),
+            ("Polymarket 注文実行APIの叩き込みテスト", False),
+            ("1取引あたり3,000〜5,000円の少額実弾でAPI注文・約定テスト", False),
+            ("スリッページ計測とロジックへのフィードバック", False),
         ],
     },
     {
         "phase": 12,
-        "title": "裁定ロジック厳格化",
+        "emoji": "📈",
+        "title": "本格実弾運用（ケリー基準の実戦投入）",
+        "summary": "システムが自動で資金管理（ケリー基準）を行い、エッジの大きさに合わせて最適ロットを張る真の自動運用フェーズ。資金100〜300万円。",
         "tasks": [
-            ("conditionId→numeric ID修正（全市場フェッチ成功）", True),
-            ("DeepSeek AI論理依存ペア検出（24hキャッシュ）", True),
-            ("三角裁定：AI判定関連ペアのみに限定", True),
-            ("論理矛盾チェック：隣接比較廃止→AI対象ペアのみ", True),
-            ("手数料2%控除後純利益計算・99.9%異常値除去", True),
+            ("資金残高（Balance）をAPIでリアルタイム取得しケリー基準と完全連動", False),
+            ("APIダウン・予期せぬエラー時に全ポジション自動清算または安全ホールドする緊急停止スクリプト配線", False),
+            ("利益・損失推移をSQLiteに自動記録しダッシュボードに「資産曲線グラフ」を追加", False),
         ],
     },
     {
         "phase": 13,
-        "title": "Webダッシュボード",
+        "emoji": "🚀",
+        "title": "大資本スケール運用（1,000万円の世界）",
+        "summary": "板の厚み監視・複数口座分散により、不眠不休で働く自律型資産運用会社として完成。資金1,000万円。",
         "tasks": [
-            ("Flask Webサーバー（ville_main.pyと独立プロセス）", True),
-            ("ロードマップ進捗チェックリスト表示", True),
-            ("SQLiteリアルタイムデータ表示", True),
-            ("ハートビート・ボラティリティ履歴表示", True),
-            ("ダークモードUI（エンジニアライク）", True),
-            ("60秒オートリフレッシュ", True),
+            ("板の厚み（マーケットデプス）監視機能追加（1,000万円注文による価格影響チェック）", False),
+            ("複数アカウントまたは複数取引所への資金分散アルゴリズムの実実装", False),
         ],
     },
 ]
@@ -373,8 +373,9 @@ HTML = r"""<!DOCTYPE html>
     <div class="phase-card">
       <h3>
         <span class="phase-num">Ph.{{ ph.phase }}</span>
-        {{ ph.title }}
+        {{ ph.emoji }} {{ ph.title }}
       </h3>
+      <p style="color:var(--muted);font-size:11px;margin-bottom:12px;line-height:1.7">{{ ph.summary }}</p>
       {% for task, done in ph.tasks %}
       <div class="task {% if done %}done{% endif %}">
         <span class="icon">{% if done %}✅{% else %}⬜{% endif %}</span>
