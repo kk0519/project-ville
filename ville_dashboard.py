@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 ╔══════════════════════════════════════════════════════════════════╗
-║  PROJECT VILE (ヴィレ)  —  Rich Dashboard v2.0                  ║
+║  PROJECT VILLE (ヴィレ)  —  Rich Dashboard v2.0                  ║
 ║  Professional real-time Polymarket monitoring console            ║
 ╚══════════════════════════════════════════════════════════════════╝
 """
@@ -41,7 +41,7 @@ CAPITAL_JPY      = 100_000
 EDGE_THRESHOLD   = 0.02
 POLL_INTERVAL    = 60
 MARKET_LIMIT     = 15
-LOG_FILE           = Path(__file__).parent / "vire_backtest.log"
+LOG_FILE           = Path(__file__).parent / "ville_backtest.log"
 LOG_TAIL_SIZE      = 10
 LATENCY_EXPIRY_MS  = 2_000
 
@@ -112,7 +112,7 @@ def make_header(uptime_sec: float, last_latency_ms: float) -> Panel:
     pnl_col  = "green" if pnl >= 0 else "red"
 
     t = Text(justify="center")
-    t.append("PROJECT VILE  ▶  Polymarket Simulation Engine\n", style="bold cyan")
+    t.append("PROJECT VILLE  ▶  Polymarket Simulation Engine\n", style="bold cyan")
     t.append(f"  総仮想損益: ", style="white")
     t.append(f"¥{pnl:+,.0f}  ", style=f"bold {pnl_col}")
     t.append(f"│  稼働時間: {h:02d}:{m:02d}:{s:02d}  ", style="white")
@@ -277,7 +277,7 @@ def run_cycle(market_ids: list[str]) -> tuple[list[MarketData], float]:
 
 # ── Main ─────────────────────────────────────────────────────────
 def main():
-    console.print("[cyan]PROJECT VILE[/cyan] 起動中 — DB初期化・市場リスト取得中...")
+    console.print("[cyan]PROJECT VILLE[/cyan] 起動中 — DB初期化・市場リスト取得中...")
     init_db()
 
     raw = fetch_active_markets(limit=MARKET_LIMIT)
@@ -331,5 +331,5 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        console.print(f"\n[cyan]VILE 終了。最終統計: {stats.summary_line()}[/cyan]")
+        console.print(f"\n[cyan]VILLE 終了。最終統計: {stats.summary_line()}[/cyan]")
         sys.exit(0)

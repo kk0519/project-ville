@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 ╔══════════════════════════════════════════════════════════════════╗
-║  PROJECT VILE (ヴィレ)  —  Polymarket Simulation Engine v3.1    ║
+║  PROJECT VILLE (ヴィレ)  —  Polymarket Simulation Engine v3.1    ║
 ║  Data Fetch → Edge Detection → Latency Sim → SQLite → Stats     ║
 ║  Heartbeat ・ Volatility Singularity ・ Self-Maintenance         ║
 ║  Notification: Discord / LINE Notify / SMTP                      ║
@@ -43,7 +43,7 @@ EDGE_THRESHOLD     = 0.02
 POLL_INTERVAL      = 60        # seconds between cycles
 MARKET_LIMIT       = 15
 LATENCY_EXPIRY_MS  = 2_000
-LOG_FILE           = Path(__file__).parent / "vire_backtest.log"
+LOG_FILE           = Path(__file__).parent / "ville_backtest.log"
 
 VOLATILITY_THRESHOLD        = 0.03   # 3% price change triggers singularity
 VOLATILITY_WINDOW_CYCLES    = 5      # compare current vs price 5 cycles ago (~5 min)
@@ -164,7 +164,7 @@ def check_volatility_singularity(markets: list[MarketData], cycle: int):
 # ── Self-maintenance ──────────────────────────────────────────────
 def rotate_log_file() -> str:
     stamp   = datetime.now(timezone.utc).strftime("%Y%m%d")
-    archive = LOG_FILE.parent / f"vire_backtest_{stamp}.log"
+    archive = LOG_FILE.parent / f"ville_backtest_{stamp}.log"
     root = logging.getLogger()
     for h in root.handlers[:]:
         if isinstance(h, logging.FileHandler):
@@ -237,7 +237,7 @@ def print_notification_guide():
 
 def print_banner(cycle: int):
     print(f"\n{CYAN}{'═'*78}")
-    print(f"  PROJECT VILE v3.1  ▶  Cycle #{cycle:03d}  [{now_utc()}]")
+    print(f"  PROJECT VILLE v3.1  ▶  Cycle #{cycle:03d}  [{now_utc()}]")
     print(f"  仮想資金: ¥{CAPITAL_JPY:,}  │  エッジ閾値: SUM≤{1-EDGE_THRESHOLD:.2f}  │  "
           f"ボラ検知: {VOLATILITY_THRESHOLD:.0%}/{VOLATILITY_WINDOW_CYCLES}min  │  "
           f"HB: {HEARTBEAT_INTERVAL_CYCLES}cyc毎")
@@ -394,12 +394,12 @@ def run_cycle(cycle: int, ai_pairs: list[dict] | None = None) -> int:
 
 
 def main():
-    print(f"{CYAN}[VILE v3.1] 起動 — DB初期化・市場リスト取得中...{RESET}")
+    print(f"{CYAN}[VILLE v3.1] 起動 — DB初期化・市場リスト取得中...{RESET}")
     init_db()
 
     raw = fetch_active_markets(limit=MARKET_LIMIT)
     if not raw:
-        print(f"{RED}[VILE] 市場取得失敗。終了。{RESET}")
+        print(f"{RED}[VILLE] 市場取得失敗。終了。{RESET}")
         sys.exit(1)
 
     questions = [m.get("question", "") for m in raw[:MARKET_LIMIT] if m.get("question")]
@@ -423,10 +423,10 @@ def main():
         print(f"\n{YELLOW}[通知] チャネル未設定 — 通知は無効{RESET}")
         print_notification_guide()
 
-    print(f"\n[VILE] 監視市場数    : {market_count}")
-    print(f"[VILE] ハートビート  : {HEARTBEAT_INTERVAL_CYCLES}サイクル毎 (~1時間)")
-    print(f"[VILE] ボラ特異点    : {VOLATILITY_THRESHOLD:.0%}以上/{VOLATILITY_WINDOW_CYCLES}分で検知")
-    print(f"[VILE] 日次メンテ    : {MAINTENANCE_INTERVAL_CYCLES}サイクル毎 (~24時間)\n")
+    print(f"\n[VILLE] 監視市場数    : {market_count}")
+    print(f"[VILLE] ハートビート  : {HEARTBEAT_INTERVAL_CYCLES}サイクル毎 (~1時間)")
+    print(f"[VILLE] ボラ特異点    : {VOLATILITY_THRESHOLD:.0%}以上/{VOLATILITY_WINDOW_CYCLES}分で検知")
+    print(f"[VILLE] 日次メンテ    : {MAINTENANCE_INTERVAL_CYCLES}サイクル毎 (~24時間)\n")
 
     cycle          = 0
     last_mkt_count = market_count
@@ -458,5 +458,5 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print(f"\n{CYAN}[VILE] 終了。最終統計: {stats.summary_line()}{RESET}")
+        print(f"\n{CYAN}[VILLE] 終了。最終統計: {stats.summary_line()}{RESET}")
         sys.exit(0)

@@ -17,7 +17,7 @@ GENRE_KEYWORDS: dict[str, list[str]] = {
     "other":     [],
 }
 
-DB_PATH = Path(__file__).parent.parent / "vire_data.db"
+DB_PATH = Path(__file__).parent.parent / "ville_data.db"
 
 
 def _connect() -> sqlite3.Connection:

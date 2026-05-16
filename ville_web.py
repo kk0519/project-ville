@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""vire_web.py — VILE Web Dashboard (Flask)
-Separate process from vire_main.py.
+"""ville_web.py — VILLE Web Dashboard (Flask)
+Separate process from ville_main.py.
 
 Usage (WSL bash, /mnt/c/Vile directory):
-  python3 vire_web.py
+  python3 ville_web.py
   Open: http://localhost:5000
 """
 import re
@@ -15,8 +15,8 @@ from flask import Flask, jsonify, render_template_string
 
 app = Flask(__name__)
 
-DB_PATH  = Path(__file__).parent / "vire_data.db"
-LOG_PATH = Path(__file__).parent / "vire_backtest.log"
+DB_PATH  = Path(__file__).parent / "ville_data.db"
+LOG_PATH = Path(__file__).parent / "ville_backtest.log"
 
 # ── Milestone definitions (Phase 10–13) ──────────────────────────
 MILESTONES = [
@@ -58,7 +58,7 @@ MILESTONES = [
         "phase": 13,
         "title": "Webダッシュボード",
         "tasks": [
-            ("Flask Webサーバー（vire_main.pyと独立プロセス）", True),
+            ("Flask Webサーバー（ville_main.pyと独立プロセス）", True),
             ("ロードマップ進捗チェックリスト表示", True),
             ("SQLiteリアルタイムデータ表示", True),
             ("ハートビート・ボラティリティ履歴表示", True),
@@ -156,7 +156,7 @@ HTML = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>⚡ VILE Dashboard</title>
+<title>⚡ VILLE Dashboard</title>
 <style>
   :root {
     --bg:      #0d1117;
@@ -311,7 +311,7 @@ HTML = r"""<!DOCTYPE html>
 
 <header>
   <div>
-    <h1>⚡ PROJECT VILE</h1>
+    <h1>⚡ PROJECT VILLE</h1>
     <div class="sub">自律哨戒システム — Polymarket予測市場監視エンジン v3.1</div>
   </div>
   <div class="ts">
@@ -397,7 +397,7 @@ HTML = r"""<!DOCTYPE html>
       <div class="log-line hb">{{ line }}</div>
       {% endfor %}
     {% else %}
-      <div class="no-data">ハートビートなし（vire_main.py 未起動 or 60サイクル未満）</div>
+      <div class="no-data">ハートビートなし（ville_main.py 未起動 or 60サイクル未満）</div>
     {% endif %}
   </div>
 
@@ -489,7 +489,7 @@ HTML = r"""<!DOCTYPE html>
 </main>
 
 <footer>
-  <span>PROJECT VILE v3.1 &nbsp;—&nbsp; Polymarket Simulation Engine</span>
+  <span>PROJECT VILLE v3.1 &nbsp;—&nbsp; Polymarket Simulation Engine</span>
   <span>DB: {{ 'Connected' if data.db_ok else 'Not found' }} &nbsp;|&nbsp; {{ data.now }}</span>
 </footer>
 
@@ -511,7 +511,7 @@ def api_data():
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("  VILE Web Dashboard")
+    print("  VILLE Web Dashboard")
     print("  http://localhost:5000")
     print("  Ctrl+C で停止")
     print("=" * 60)

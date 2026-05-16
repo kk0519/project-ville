@@ -2,14 +2,14 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "VILE: Main Monitor",
+      "label": "VILLE: Main Monitor",
       "type": "shell",
-      "command": "cd /mnt/c/Vile && python3 vire_main.py",
+      "command": "cd /mnt/c/Vile && python3 ville_main.py",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
-        "group": "vile",
-        "tab": "VILE-Main"
+        "group": "ville",
+        "tab": "VILLE-Main"
       },
       "runOptions": {
         "runOn": "folderOpen"
@@ -17,14 +17,14 @@
       "problemMatcher": []
     },
     {
-      "label": "VILE: Web Dashboard",
+      "label": "VILLE: Web Dashboard",
       "type": "shell",
-      "command": "cd /mnt/c/Vile && python3 vire_web.py & sleep 2 && cmd.exe /c start http://localhost:5000",
+      "command": "cd /mnt/c/Vile && python3 ville_web.py & sleep 2 && cmd.exe /c start http://localhost:5000",
       "presentation": {
         "reveal": "silent",
         "panel": "dedicated",
-        "group": "vile",
-        "tab": "VILE-Web"
+        "group": "ville",
+        "tab": "VILLE-Web"
       },
       "runOptions": {
         "runOn": "folderOpen"

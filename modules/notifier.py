@@ -83,7 +83,7 @@ def _broadcast(discord_msg: str, line_msg: str,
 def notify_edge_anomaly(market: str, edge: float, ev_jpy: float,
                         side: str, price_change_rate: float = 0.0) -> bool:
     """Fire when SUM ≤ (1 − threshold) — standard edge anomaly."""
-    title = "⚡ VILE EDGE ANOMALY"
+    title = "⚡ VILLE EDGE ANOMALY"
     body  = (
         f"Market : {market[:60]}\n"
         f"Edge   : {edge:+.4f}  |  Side : {side}\n"
@@ -102,7 +102,7 @@ def notify_triangle_anomaly(chain: list[str], prices: list[float],
     """Fire when triangle compound profit ≥ TRIANGLE_MIN_PROFIT."""
     if compound_profit < TRIANGLE_MIN_PROFIT:
         return False
-    title = "🔺 VILE TRIANGLE ARB"
+    title = "🔺 VILLE TRIANGLE ARB"
     body  = (
         f"Chain  : {' → '.join(c[:25] for c in chain)}\n"
         f"Prices : {' → '.join(f'{p:.4f}' for p in prices)}\n"
@@ -119,7 +119,7 @@ def notify_volatility_singularity(market: str, change_pct: float,
                                    yes_price: float) -> bool:
     """Fire when YES price moves ≥3% in ~5 minutes."""
     direction = "急騰🔴" if change_pct > 0 else "急落🔵"
-    title = f"⚠️ VILE VOLATILITY {direction}"
+    title = f"⚠️ VILLE VOLATILITY {direction}"
     body  = (
         f"Market : {market[:60]}\n"
         f"Change : {change_pct:+.2%} in ~5 min\n"
@@ -136,7 +136,7 @@ def notify_startup(market_count: int) -> bool:
     """Send one-time startup heartbeat to verify channel connectivity."""
     channels = channels_active()
     ch_str   = "/".join(channels) if channels else "none"
-    title = "🚀 VILE 哨戒任務を開始しました"
+    title = "🚀 VILLE 哨戒任務を開始しました"
     body  = (
         f"監視市場数    : {market_count}\n"
         f"通知チャネル  : {ch_str}\n"

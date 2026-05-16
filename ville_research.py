@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
 ╔══════════════════════════════════════════════════════════════════╗
-║  PROJECT VILE — Research & Backtest Engine v1.0                  ║
+║  PROJECT VILLE — Research & Backtest Engine v1.0                  ║
 ║  Re-simulate historical snapshots under variable conditions       ║
 ╚══════════════════════════════════════════════════════════════════╝
 
 Usage:
-  python3 vire_research.py              # full report
-  python3 vire_research.py --trend      # trend analysis only
-  python3 vire_research.py --backtest   # backtest scenarios only
+  python3 ville_research.py              # full report
+  python3 ville_research.py --trend      # trend analysis only
+  python3 ville_research.py --backtest   # backtest scenarios only
 """
 
 import argparse
@@ -162,12 +162,12 @@ def print_trend_report(report: dict):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="VILE Research Engine")
+    parser = argparse.ArgumentParser(description="VILLE Research Engine")
     parser.add_argument("--trend",    action="store_true", help="Trend analysis only")
     parser.add_argument("--backtest", action="store_true", help="Backtest scenarios only")
     args = parser.parse_args()
 
-    print(f"[VILE Research] 起動  DB={DB_PATH}")
+    print(f"[VILLE Research] 起動  DB={DB_PATH}")
     init_db()
 
     snapshots = load_all_snapshots()
@@ -176,7 +176,7 @@ def main():
     do_trend    = args.trend    or not (args.trend or args.backtest)
     do_backtest = args.backtest or not (args.trend or args.backtest)
 
-    print(f"[VILE Research] スナップショット={len(snapshots)}件  "
+    print(f"[VILLE Research] スナップショット={len(snapshots)}件  "
           f"トレンドデータ={report['snapshot_total']}件")
 
     if do_trend:
@@ -185,7 +185,7 @@ def main():
     if do_backtest:
         if not snapshots:
             print("\n  [INFO] バックテスト用スナップショットデータなし。")
-            print("  vire_main.py または vire_dashboard.py を実行してデータを蓄積してください。")
+            print("  ville_main.py または ville_dashboard.py を実行してデータを蓄積してください。")
         else:
             bt_results = run_backtest(snapshots)
             print_backtest_table(bt_results)
