@@ -1,5 +1,6 @@
 """ai_analyst.py — DeepSeek-R1 API: AI-driven logical market pair detection"""
 import json
+import logging
 import os
 import time
 import requests
@@ -73,20 +74,42 @@ def _api_call(questions: list[str], api_key: str) -> list[dict]:
 def find_related_pairs(questions: list[str]) -> list[dict]:
     """
     AI-driven logical pair detection with SQLite cache (24h TTL).
-    Falls back to heuristic if no API key.
+
+    Resolution order:
+    1. Fresh cache (within TTL)  → return immediately, no API call
+    2. Live API / heuristic      → save to cache, return result
+    3. Stale cache (TTL expired) → return last known-good result
+    4. No cache at all           → return []
+
+    Patrol never stops: empty-list API failures are NOT cached (database.py
+    save_pair_cache skips empty), so step 3 always finds the last success.
     """
-    from modules.database import make_cache_key, get_cached_pairs, save_pair_cache
+    from modules.database import (make_cache_key, get_cached_pairs,
+                                   save_pair_cache, get_latest_cached_pairs)
 
     cache_key = make_cache_key(questions)
-    cached    = get_cached_pairs(cache_key)
+
+    # 1. Fresh cache hit
+    cached = get_cached_pairs(cache_key)
     if cached is not None:
         return cached
 
+    # 2. Live call
     api_key = os.environ.get("DEEPSEEK_API_KEY", "")
     pairs   = _api_call(questions, api_key) if api_key else _heuristic_fallback(questions)
 
-    save_pair_cache(cache_key, pairs)
-    return pairs
+    if pairs:
+        save_pair_cache(cache_key, pairs)   # only persists non-empty results
+        return pairs
+
+    # 3. Stale fallback — API failed or returned nothing
+    stale = get_latest_cached_pairs(cache_key)
+    if stale is not None:
+        logging.warning("AI_PAIRS | live call returned empty; using stale cache")
+        return stale
+
+    # 4. No history at all
+    return []
 
 
 def _heuristic_fallback(questions: list[str]) -> list[dict]:

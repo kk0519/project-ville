@@ -24,9 +24,9 @@ from modules.detector     import (MarketData, detect_edge, calculate_ev,
                                    check_logical_inconsistency, scan_triangle_arb)
 from modules.calculator   import simulate_trade, optimal_position_size
 from modules.stats        import Stats, TradeRecord
-from modules.database     import (init_db, save_snapshot, save_edge_event, save_trade,
-                                  save_anomaly_analysis, cleanup_old_snapshots,
-                                  get_total_record_count)
+from modules.database     import (init_db, save_snapshots_bulk, save_edge_event,
+                                  save_trade, save_anomaly_analysis,
+                                  cleanup_old_snapshots, get_total_record_count)
 from modules.ai_analyst   import find_related_pairs, analyze_price_spike
 from modules.notifier     import (notify_edge_anomaly, notify_triangle_anomaly,
                                    notify_volatility_singularity, notify_startup,
@@ -50,6 +50,7 @@ VOLATILITY_WINDOW_CYCLES    = 20     # ~5 min at 15s/cycle (was 5 @ 60s)
 HEARTBEAT_INTERVAL_CYCLES   = 240    # ~1 hour at 15s/cycle (was 60 @ 60s)
 MAINTENANCE_INTERVAL_CYCLES = 5760   # ~24 hours at 15s/cycle (was 1440 @ 60s)
 AI_REFRESH_INTERVAL_CYCLES  = 240    # refresh AI pairs every ~1 hour
+VERBOSE_MARKETS             = False  # True = print all 50 markets; False = edges only
 
 # ── Logging setup ────────────────────────────────────────────────
 logging.basicConfig(
@@ -120,9 +121,13 @@ def write_heartbeat(market_count: int):
     avg_lat = sum(_latency_ring) / len(_latency_ring) if _latency_ring else 0.0
     total   = get_total_record_count()
     msg = (f"[HEARTBEAT] Active Markets: {market_count}, "
-           f"Avg Latency: {avg_lat:.0f}ms, DB Records: {total}")
+           f"Avg Latency: {avg_lat:.0f}ms, DB Records: {total}, "
+           f"Stats Trades: {stats.total}")
     logging.info(msg)
     print(f"  {CYAN}{msg}{RESET}")
+    # Cap in-memory trade list and release unreachable objects
+    stats.trim(max_records=10_000)
+    gc.collect()
 
 
 # ── Volatility singularity detection ─────────────────────────────
@@ -295,8 +300,10 @@ def print_stats_panel():
 def run_cycle(cycle: int) -> int:
     print_banner(cycle)
 
-    t0      = time.time()
+    t0       = time.time()
+    ts_now   = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     markets: list[MarketData] = []
+    snap_rows: list[tuple]    = []   # bulk-insert buffer
 
     raw_list = fetch_active_markets(limit=MARKET_LIMIT)
     for raw in raw_list:
@@ -313,13 +320,24 @@ def run_cycle(cycle: int) -> int:
             no_price  = no_p,
         )
         markets.append(md)
-        save_snapshot(md.market_id, md.question, yes_p, no_p)
+        snap_rows.append((ts_now, mid, md.question[:120],
+                          yes_p, no_p, md.total, md.edge))
 
-    _latency_ring.append((time.time() - t0) * 1000)
+    fetch_ms = (time.time() - t0) * 1000
+    _latency_ring.append(fetch_ms)
 
     if not markets:
-        print(f"  {RED}[ERROR] 有効な市場データなし{RESET}")
+        print(f"  {RED}[ERROR] 有効な市場データなし（APIタイムアウトの可能性）{RESET}")
         return 0
+
+    # ── Batch-insert all snapshots in ONE transaction ──────────────
+    save_snapshots_bulk(snap_rows)
+
+    # ── Prune stale market IDs from price history ─────────────────
+    # Polymarket retires old markets; stale IDs would grow _price_history unboundedly.
+    active_ids = {md.market_id for md in markets}
+    for sid in set(_price_history.keys()) - active_ids:
+        del _price_history[sid]
 
     # ── Build related-pair ID set from AI analyst results ─────────
     q_to_id = {md.question: md.market_id for md in markets}
@@ -332,46 +350,64 @@ def run_cycle(cycle: int) -> int:
         if id_a and id_b:
             related_id_pairs.add(frozenset([id_a, id_b]))
 
-    arb_found = 0
-    for i, md in enumerate(markets, 1):
-        ev  = calculate_ev(md.yes_price, md.no_price)
-        pos = optimal_position_size(md.yes_price, capital=CAPITAL_JPY)
-        print_market(i, md, ev, pos)
+    # ── Market scan: edge detection first-pass ────────────────────
+    arb_found   = 0
+    edge_mkts   = []   # (md, ev, sim, latency_ms, expired, pch)
 
-        if detect_edge(md, EDGE_THRESHOLD):
-            latency_ms = simulate_latency()
-            expired    = latency_ms > LATENCY_EXPIRY_MS
-            exp_label  = (f"{RED}EXPIRED {latency_ms:.0f}ms{RESET}"
-                          if expired else f"{GREEN}{latency_ms:.0f}ms OK{RESET}")
-            sim = simulate_trade(md.yes_price, md.no_price, CAPITAL_JPY, ev["best_side"])
-            ev_jpy = 0.0 if expired else sim["expected_value"]
+    for md in markets:
+        if not detect_edge(md, EDGE_THRESHOLD):
+            if VERBOSE_MARKETS:
+                ev  = calculate_ev(md.yes_price, md.no_price)
+                pos = optimal_position_size(md.yes_price, capital=CAPITAL_JPY)
+                print_market(markets.index(md) + 1, md, ev, pos)
+                print()
+            continue
 
-            alert(
-                f"{md.question[:48]}  SUM={md.total:.4f}  "
-                f"EV=¥{ev_jpy:+,.0f}  {ev['best_side']}  {exp_label}"
-            )
-            log_virtual_trade(md, ev["best_side"], sim, latency_ms)
-            prev = _prev_prices.get(md.market_id, md.yes_price)
-            pch  = (md.yes_price - prev) / prev if prev else 0.0
-            save_edge_event(md.market_id, md.question,
-                            md.yes_price, md.no_price,
-                            sim["expected_value"], ev["best_side"],
-                            latency_ms, expired,
-                            price_change_rate=pch)
+        # Edge detected — only now compute full EV + Kelly + simulate
+        ev         = calculate_ev(md.yes_price, md.no_price)
+        pos        = optimal_position_size(md.yes_price, capital=CAPITAL_JPY)
+        latency_ms = simulate_latency()
+        expired    = latency_ms > LATENCY_EXPIRY_MS
+        sim        = simulate_trade(md.yes_price, md.no_price, CAPITAL_JPY, ev["best_side"])
+        ev_jpy     = 0.0 if expired else sim["expected_value"]
+        prev       = _prev_prices.get(md.market_id, md.yes_price)
+        pch        = (md.yes_price - prev) / prev if prev else 0.0
 
-            # ── Notification: edge anomaly (non-blocking) ────
-            _notify_bg(notify_edge_anomaly, md.question, md.edge, ev_jpy,
-                       ev["best_side"], price_change_rate=pch)
+        exp_label  = (f"{RED}EXPIRED {latency_ms:.0f}ms{RESET}"
+                      if expired else f"{GREEN}{latency_ms:.0f}ms OK{RESET}")
+        print_market(len(edge_mkts) + 1, md, ev, pos)
+        alert(
+            f"{md.question[:48]}  SUM={md.total:.4f}  "
+            f"EV=¥{ev_jpy:+,.0f}  {ev['best_side']}  {exp_label}"
+        )
 
-            status_txt = "失効（Expired）→ 損益不計上" if expired else "仮想エントリー記録済"
-            print(f"      {GREEN}→ {status_txt} ({LOG_FILE.name}){RESET}")
-            arb_found += 1
-        print()
+        log_virtual_trade(md, ev["best_side"], sim, latency_ms)
+        save_edge_event(md.market_id, md.question,
+                        md.yes_price, md.no_price,
+                        sim["expected_value"], ev["best_side"],
+                        latency_ms, expired, price_change_rate=pch)
+
+        _notify_bg(notify_edge_anomaly, md.question, md.edge, ev_jpy,
+                   ev["best_side"], price_change_rate=pch)
+
+        status_txt = "失効（Expired）→ 損益不計上" if expired else "仮想エントリー記録済"
+        print(f"      {GREEN}→ {status_txt}{RESET}\n")
+        edge_mkts.append(md)
+        arb_found += 1
+
+    # ── Compact cycle summary ─────────────────────────────────────
+    cycle_ms = (time.time() - t0) * 1000
+    print(
+        f"  市場スキャン: {len(markets)}件  │  "
+        f"エッジ: {len(edge_mkts)}件  │  "
+        f"AI関連ペア: {len(related_id_pairs)}組  │  "
+        f"fetch={fetch_ms:.0f}ms  cycle={cycle_ms:.0f}ms"
+    )
 
     # ── Logical inconsistency sweep (AI-identified pairs only) ────
     if related_id_pairs:
-        id_to_md  = {md.market_id: md for md in markets}
-        checked   = set()
+        id_to_md = {md.market_id: md for md in markets}
+        checked  = set()
         for pair_ids in related_id_pairs:
             ids = list(pair_ids)
             ma  = id_to_md.get(ids[0])
@@ -399,12 +435,11 @@ def run_cycle(cycle: int) -> int:
         logging.info(
             f"TRIANGLE | chain={tri['chain']} | profit={tri['compound_profit']:.4f}"
         )
-        # ── Notification: triangle arb (≥2%, non-blocking) ──
         _notify_bg(notify_triangle_anomaly, tri["chain"], tri["prices"],
                    tri["compound_profit"])
 
     if arb_found == 0:
-        print(f"  {GREEN}✓ 今サイクル: アービトラージ機会なし{RESET}")
+        print(f"  {GREEN}✓ アービトラージ機会なし{RESET}")
 
     # ── Volatility singularity check ──────────────────────────────
     check_volatility_singularity(markets, cycle)
@@ -414,7 +449,6 @@ def run_cycle(cycle: int) -> int:
         _prev_prices[md.market_id] = md.yes_price
 
     print_stats_panel()
-    print(f"\n  次回更新まで {POLL_INTERVAL}秒 待機... (Ctrl+C で終了)\n")
     return len(markets)
 
 

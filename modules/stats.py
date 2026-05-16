@@ -1,9 +1,14 @@
-"""stats.py — Real-time trade statistics: win rate, drawdown, cumulative P&L"""
+"""stats.py — Real-time trade statistics: win rate, drawdown, cumulative P&L
+
+Performance design:
+- TradeRecord uses slots=True  → eliminates per-instance __dict__
+- Stats uses incremental counters (_wins, _pnl_sum) → O(1) for hot properties
+- trim() caps memory at max_records trades (called from heartbeat)
+"""
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
 
 
-@dataclass
+@dataclass(slots=True)
 class TradeRecord:
     timestamp:   str
     market:      str
@@ -16,10 +21,16 @@ class TradeRecord:
 
 @dataclass
 class Stats:
-    trades: list[TradeRecord] = field(default_factory=list)
+    trades:   list[TradeRecord] = field(default_factory=list)
+    # Incremental O(1) counters — updated in add(), reset in trim()
+    _wins:    int               = field(default=0,   init=False, repr=False)
+    _pnl_sum: float             = field(default=0.0, init=False, repr=False)
 
     def add(self, trade: TradeRecord):
         self.trades.append(trade)
+        if trade.is_win:
+            self._wins += 1
+        self._pnl_sum += trade.pnl
 
     @property
     def total(self) -> int:
@@ -27,15 +38,15 @@ class Stats:
 
     @property
     def win_count(self) -> int:
-        return sum(1 for t in self.trades if t.is_win)
+        return self._wins              # O(1)
 
     @property
     def win_rate(self) -> float:
-        return (self.win_count / self.total * 100) if self.total else 0.0
+        return (self._wins / len(self.trades) * 100) if self.trades else 0.0
 
     @property
     def cumulative_pnl(self) -> float:
-        return sum(t.pnl for t in self.trades)
+        return self._pnl_sum           # O(1)
 
     @property
     def max_drawdown(self) -> float:
@@ -52,10 +63,21 @@ class Stats:
         gross_loss = abs(sum(t.pnl for t in self.trades if t.pnl < 0))
         return gross_win / gross_loss if gross_loss > 0 else float("inf")
 
+    def trim(self, max_records: int = 10_000):
+        """Cap in-memory trades list to prevent unbounded growth.
+
+        Called from heartbeat (~1h interval). O(n) one-time cost on trim,
+        then O(1) for hot properties until the next trim.
+        """
+        if len(self.trades) > max_records:
+            self.trades   = self.trades[-max_records:]
+            self._wins    = sum(1 for t in self.trades if t.is_win)
+            self._pnl_sum = sum(t.pnl for t in self.trades)
+
     def summary_line(self) -> str:
         return (
             f"取引数={self.total}  勝率={self.win_rate:.1f}%  "
-            f"累計損益=¥{self.cumulative_pnl:,.0f}  "
+            f"累計損益=¥{self._pnl_sum:,.0f}  "
             f"最大DD=¥{self.max_drawdown:,.0f}  "
             f"PF={self.profit_factor:.2f}"
         )

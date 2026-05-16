@@ -1,7 +1,17 @@
 """fetcher.py — Polymarket API data retrieval with auto-retry"""
-import json
 import time
 import requests
+
+# orjson is 2-5x faster than stdlib json for repeated small parses;
+# fall back silently to stdlib if not installed.
+try:
+    import orjson as _json
+    def _loads(data: str | bytes):
+        return _json.loads(data)
+except ImportError:
+    import json as _json_stdlib
+    def _loads(data: str | bytes):
+        return _json_stdlib.loads(data)
 
 GAMMA_API = "https://gamma-api.polymarket.com"
 MAX_RETRIES = 2
@@ -46,7 +56,7 @@ def parse_prices(market: dict) -> tuple[float | None, float | None]:
     raw = market.get("outcomePrices")
     if not raw:
         return None, None
-    prices = json.loads(raw) if isinstance(raw, str) else raw
+    prices = _loads(raw) if isinstance(raw, str) else raw
     try:
         return float(prices[0]), float(prices[1])
     except (IndexError, ValueError, TypeError):

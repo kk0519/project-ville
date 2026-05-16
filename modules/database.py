@@ -23,6 +23,10 @@ DB_PATH = Path(__file__).parent.parent / "ville_data.db"
 def _connect() -> sqlite3.Connection:
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
+    # WAL: allows concurrent reads (ville_web.py) while writes are in progress.
+    # NORMAL synchronous: safe after crash (WAL guarantees durability without fsync).
+    conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("PRAGMA synchronous=NORMAL")
     return conn
 
 
@@ -122,6 +126,22 @@ def save_snapshot(market_id: str, question: str,
                    yes_p + no_p, (yes_p + no_p) - 1.0))
 
 
+def save_snapshots_bulk(rows: list[tuple]):
+    """Batch-insert all market snapshots in a single transaction.
+
+    Replaces N individual save_snapshot() calls with one executemany().
+    At 50 markets/cycle this eliminates 49 redundant connection open/close pairs.
+
+    rows: list of (ts, market_id, question, yes_p, no_p, total, edge)
+    """
+    if not rows:
+        return
+    with _cursor() as c:
+        c.executemany("""INSERT INTO market_snapshots
+                         (ts, market_id, question, yes_price, no_price, total, edge)
+                         VALUES (?,?,?,?,?,?,?)""", rows)
+
+
 def save_edge_event(market_id: str, question: str,
                     yes_p: float, no_p: float,
                     ev_jpy: float, side: str,
@@ -205,6 +225,10 @@ def get_cached_pairs(cache_key: str) -> list[dict] | None:
 
 
 def save_pair_cache(cache_key: str, pairs: list[dict], ttl_hours: int = 24):
+    # Never persist empty results — empty could mean API failure, not "no pairs found".
+    # Stale cache is better than a cached empty list.
+    if not pairs:
+        return
     from datetime import timedelta
     now     = datetime.now(timezone.utc)
     expires = (now + timedelta(hours=ttl_hours)).strftime("%Y-%m-%d %H:%M:%S")
@@ -214,6 +238,21 @@ def save_pair_cache(cache_key: str, pairs: list[dict], ttl_hours: int = 24):
                      (cache_key, pairs_json, created_at, expires_at)
                      VALUES (?,?,?,?)""",
                   (cache_key, json.dumps(pairs, ensure_ascii=False), now_str, expires))
+
+
+def get_latest_cached_pairs(cache_key: str) -> list[dict] | None:
+    """Stale-cache fallback: return most recent entry regardless of TTL.
+
+    Called when a live API call fails so the patrol never stops with empty pairs.
+    Returns None only if no entry has ever been saved for this cache_key.
+    """
+    with _cursor() as c:
+        row = c.execute(
+            "SELECT pairs_json FROM ai_pair_cache "
+            "WHERE cache_key=? ORDER BY created_at DESC LIMIT 1",
+            (cache_key,)
+        ).fetchone()
+    return json.loads(row["pairs_json"]) if row else None
 
 
 # ── Trend analysis ────────────────────────────────────────────────
