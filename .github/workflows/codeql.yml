@@ -3,12 +3,11 @@ name: CodeQL Static Analysis
 on:
   push:
     branches: [ main ]
-    paths:
-      - '**.py'
   pull_request:
     branches: [ main ]
   schedule:
     - cron: '0 3 * * 1'   # weekly Monday 03:00 UTC
+  workflow_dispatch:        # manual trigger from Actions tab
 
 jobs:
   analyze:
