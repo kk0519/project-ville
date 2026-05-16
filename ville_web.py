@@ -553,6 +553,26 @@ HTML = r"""<!DOCTYPE html>
 
 <main>
 
+  <!-- ── Mission Statement ── -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px 28px;margin-bottom:24px;border-left:3px solid var(--accent);">
+    <div style="font-size:13px;color:var(--accent);font-weight:bold;margin-bottom:10px;letter-spacing:1px;">MISSION</div>
+    <div style="font-size:14px;color:var(--text);line-height:1.9;">
+      <b>PROJECT VILLE</b> は、Polymarket（予測市場）における <b>価格非効率（アービトラージ機会）</b> を自律的に探知・分析する哨戒システムです。<br>
+      <span style="color:var(--muted);">
+        YES価格 + NO価格 の合計が1.0を大きく下回る市場（エッジ検出）を常時スキャンし、
+        AI（DeepSeek）による論理的整合性ペア分析・Kelly基準ポジションサイジング・オーダーブック深度評価（Phase 13）を組み合わせて
+        投資判断をサポートします。リアル発注は行わず、仮想取引シミュレーションで期待値を継続的に計測します。
+      </span>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:24px;flex-wrap:wrap;">
+      <span style="color:var(--green);font-size:12px;">✓ エッジ検出（YES+NO &lt; 0.98）</span>
+      <span style="color:var(--green);font-size:12px;">✓ AI論理ペア分析（DeepSeek）</span>
+      <span style="color:var(--green);font-size:12px;">✓ Kelly基準ポジションサイジング</span>
+      <span style="color:var(--green);font-size:12px;">✓ 1,000万円規模マルチ口座配分（Phase 13）</span>
+      <span style="color:var(--muted);font-size:12px;">※ 仮想取引のみ・リアル発注なし</span>
+    </div>
+  </div>
+
   <!-- ── Timeline ── -->
   <div class="section-title">全体スケジュール（Phase 1 – 13）</div>
   <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:24px 20px 16px;">
