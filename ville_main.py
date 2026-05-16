@@ -21,8 +21,12 @@ from pathlib import Path
 
 from modules.fetcher      import fetch_active_markets, parse_prices
 from modules.detector     import (MarketData, detect_edge, calculate_ev,
+                                   calculate_effective_ev,
                                    check_logical_inconsistency, scan_triangle_arb)
-from modules.calculator   import simulate_trade, optimal_position_size
+from modules.calculator   import (simulate_trade, optimal_position_size,
+                                   distribute_capital, distribution_summary)
+from modules.orderbook    import (fetch_depth, parse_clob_token_id,
+                                   depth_summary, DepthSnapshot)
 from modules.stats        import Stats, TradeRecord
 from modules.database     import (init_db, save_snapshots_bulk, save_edge_event,
                                   save_trade, save_anomaly_analysis,
@@ -51,6 +55,9 @@ HEARTBEAT_INTERVAL_CYCLES   = 240    # ~1 hour at 15s/cycle (was 60 @ 60s)
 MAINTENANCE_INTERVAL_CYCLES = 5760   # ~24 hours at 15s/cycle (was 1440 @ 60s)
 AI_REFRESH_INTERVAL_CYCLES  = 240    # refresh AI pairs every ~1 hour
 VERBOSE_MARKETS             = False  # True = print all 50 markets; False = edges only
+PHASE13_CAPITAL_JPY         = 10_000_000   # 1,000万円 scale capital model
+PHASE13_DEPTH_ENABLED       = True         # fetch order book depth for edge markets
+PHASE13_NUM_ACCOUNTS        = 3            # accounts to distribute across
 
 # ── Logging setup ────────────────────────────────────────────────
 logging.basicConfig(
@@ -351,8 +358,13 @@ def run_cycle(cycle: int) -> int:
             related_id_pairs.add(frozenset([id_a, id_b]))
 
     # ── Market scan: edge detection first-pass ────────────────────
+    # Pre-build token_id map once (clob IDs come from raw Gamma API data)
+    raw_by_id   = {str(r.get("id") or r.get("conditionId") or ""): r
+                   for r in raw_list if r.get("id") or r.get("conditionId")}
+
     arb_found   = 0
-    edge_mkts   = []   # (md, ev, sim, latency_ms, expired, pch)
+    edge_mkts   = []
+    ph13_positions: list[dict] = []   # for distribute_capital()
 
     for md in markets:
         if not detect_edge(md, EDGE_THRESHOLD):
@@ -363,7 +375,7 @@ def run_cycle(cycle: int) -> int:
                 print()
             continue
 
-        # Edge detected — only now compute full EV + Kelly + simulate
+        # ── Edge detected ──────────────────────────────────────────
         ev         = calculate_ev(md.yes_price, md.no_price)
         pos        = optimal_position_size(md.yes_price, capital=CAPITAL_JPY)
         latency_ms = simulate_latency()
@@ -373,27 +385,72 @@ def run_cycle(cycle: int) -> int:
         prev       = _prev_prices.get(md.market_id, md.yes_price)
         pch        = (md.yes_price - prev) / prev if prev else 0.0
 
-        exp_label  = (f"{RED}EXPIRED {latency_ms:.0f}ms{RESET}"
-                      if expired else f"{GREEN}{latency_ms:.0f}ms OK{RESET}")
+        # ── Phase 13: order book depth (non-blocking, best-effort) ─
+        depth: DepthSnapshot | None = None
+        if PHASE13_DEPTH_ENABLED:
+            raw_mkt  = raw_by_id.get(md.market_id, {})
+            token_id = parse_clob_token_id(raw_mkt)
+            if token_id:
+                depth = fetch_depth(token_id)
+
+        # Slippage-adjusted EV at Phase 13 capital scale
+        eff_ev = calculate_effective_ev(
+            md.yes_price, md.no_price,
+            order_size       = PHASE13_CAPITAL_JPY / max(md.yes_price, 0.01),
+            liquidity_depth  = depth.ask_depth if depth else None,
+        )
+
+        exp_label = (f"{RED}EXPIRED {latency_ms:.0f}ms{RESET}"
+                     if expired else f"{GREEN}{latency_ms:.0f}ms OK{RESET}")
+
         print_market(len(edge_mkts) + 1, md, ev, pos)
         alert(
             f"{md.question[:48]}  SUM={md.total:.4f}  "
             f"EV=¥{ev_jpy:+,.0f}  {ev['best_side']}  {exp_label}"
         )
+        if depth:
+            print(f"      {CYAN}[Ph13] {depth_summary(depth, PHASE13_CAPITAL_JPY, md.yes_price)}{RESET}")
+            if not eff_ev["effective_best_ev"] > 0:
+                print(f"      {YELLOW}[Ph13] ⚠ スリッページ後EV負転: 大口注文非推奨{RESET}")
+        else:
+            print(f"      {YELLOW}[Ph13] 板データなし — スリッページ未評価{RESET}")
 
         log_virtual_trade(md, ev["best_side"], sim, latency_ms)
         save_edge_event(md.market_id, md.question,
                         md.yes_price, md.no_price,
                         sim["expected_value"], ev["best_side"],
                         latency_ms, expired, price_change_rate=pch)
-
         _notify_bg(notify_edge_anomaly, md.question, md.edge, ev_jpy,
                    ev["best_side"], price_change_rate=pch)
+
+        # Accumulate for Phase 13 distribution calculation
+        ph13_positions.append({
+            "market_id": md.market_id,
+            "question":  md.question,
+            "best_side": ev["best_side"],
+            "yes_price": md.yes_price,
+            "kelly_f":   pos.get("kelly_f", 0.0),
+            "ev":        eff_ev["effective_best_ev"],
+        })
 
         status_txt = "失効（Expired）→ 損益不計上" if expired else "仮想エントリー記録済"
         print(f"      {GREEN}→ {status_txt}{RESET}\n")
         edge_mkts.append(md)
         arb_found += 1
+
+    # ── Phase 13: multi-account distribution plan (when edges found) ─
+    if ph13_positions:
+        allocs = distribute_capital(
+            PHASE13_CAPITAL_JPY, ph13_positions,
+            num_accounts=PHASE13_NUM_ACCOUNTS,
+        )
+        summary = distribution_summary(allocs)
+        print(f"\n  {CYAN}[Ph13 配分シミュレーション] {summary}{RESET}")
+        for a in allocs:
+            warn = f"  {YELLOW}⚠ 大口{RESET}" if a["impact_warning"] else ""
+            print(f"    口座{a['account_idx']} | ¥{a['capital_jpy']:>12,.0f} | "
+                  f"{a['best_side']:3s} | {a['question'][:45]}{warn}")
+        logging.info(f"PH13_DISTRIBUTION | {summary} | positions={len(allocs)}")
 
     # ── Compact cycle summary ─────────────────────────────────────
     cycle_ms = (time.time() - t0) * 1000

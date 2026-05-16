@@ -1,4 +1,6 @@
-"""calculator.py — Position sizing (Kelly + scipy) & virtual trade simulation"""
+"""calculator.py — Position sizing (Kelly + scipy), virtual trade simulation,
+                   and Phase 13 multi-account capital distribution.
+"""
 POLYMARKET_FEE = 0.02
 
 try:
@@ -82,3 +84,103 @@ def optimal_position_size(yes_price: float, capital: float = 100_000,
             result["scipy_optimal_jpy"] = f"¥{res.x[0]:,.0f}"
 
     return result
+
+
+# ── Phase 13: Multi-account capital distribution ──────────────────
+
+def distribute_capital(
+    total_capital:    float,
+    positions:        list[dict],
+    num_accounts:     int   = 3,
+    max_per_account:  float = 5_000_000,
+    min_ev:           float = 0.005,
+    fee_rate:         float = POLYMARKET_FEE,
+) -> list[dict]:
+    """
+    Proportional-Kelly capital distribution across multiple accounts.
+
+    For 1,000万円-scale operations, concentrating capital in a single
+    Polymarket account creates slippage and single-point-of-failure risk.
+    This function distributes capital across `num_accounts` accounts
+    using Kelly-weighted proportional allocation.
+
+    Algorithm:
+        1. Filter positions with ev >= min_ev (quality gate)
+        2. Kelly fractions are normalised to sum ≤ 1.0 (portfolio Kelly)
+           to avoid simultaneous over-betting across correlated markets.
+        3. Allocate proportionally; round-robin across accounts.
+        4. Each account is capped at max_per_account.
+
+    Args:
+        total_capital:   Total deployable capital in JPY (e.g. 10_000_000)
+        positions:       List of dicts with keys:
+                           market_id   str
+                           best_side   str  "YES" | "NO"
+                           yes_price   float
+                           kelly_f     float  (from optimal_position_size)
+                           ev          float  (expected value per unit)
+                           question    str    (for logging)
+        num_accounts:    Number of accounts to spread across (default 3)
+        max_per_account: Hard cap per account in JPY (default 500万円)
+        min_ev:          Minimum EV threshold to include a position
+        fee_rate:        Fee per leg (default 2%)
+
+    Returns:
+        List of allocation dicts:
+          {market_id, account_idx, capital_jpy, kelly_weight,
+           ev, best_side, question, impact_warning}
+    """
+    eligible = [p for p in positions
+                if p.get("ev", 0) >= min_ev and p.get("kelly_f", 0) > 0]
+
+    if not eligible:
+        return []
+
+    # Normalise Kelly fractions (portfolio Kelly: sum → 1.0)
+    total_kelly = sum(p["kelly_f"] for p in eligible)
+    allocations = []
+    remaining   = total_capital
+
+    for i, pos in enumerate(eligible):
+        if remaining <= 0:
+            break
+
+        norm_weight = pos["kelly_f"] / total_kelly   # proportional share
+        raw_alloc   = total_capital * norm_weight
+        account_idx = i % num_accounts               # round-robin assignment
+        alloc       = min(raw_alloc, max_per_account, remaining)
+
+        if alloc < 1000:   # skip sub-¥1,000 slices (transaction overhead)
+            continue
+
+        impact_warning = alloc > 1_000_000   # flag >100万円 single allocation
+
+        allocations.append({
+            "market_id":      pos.get("market_id", ""),
+            "question":       pos.get("question", "")[:60],
+            "best_side":      pos.get("best_side", "YES"),
+            "account_idx":    account_idx,
+            "capital_jpy":    round(alloc),
+            "kelly_weight":   round(norm_weight, 4),
+            "ev":             pos.get("ev", 0.0),
+            "impact_warning": impact_warning,
+        })
+        remaining -= alloc
+
+    return sorted(allocations, key=lambda x: x["capital_jpy"], reverse=True)
+
+
+def distribution_summary(allocations: list[dict]) -> str:
+    """One-line summary for terminal/log output."""
+    if not allocations:
+        return "配分なし"
+    total = sum(a["capital_jpy"] for a in allocations)
+    acct_totals = {}
+    for a in allocations:
+        acct_totals[a["account_idx"]] = (
+            acct_totals.get(a["account_idx"], 0) + a["capital_jpy"]
+        )
+    acct_str = "  ".join(
+        f"口座{k}:¥{v:,.0f}" for k, v in sorted(acct_totals.items())
+    )
+    return f"配分{len(allocations)}件  合計¥{total:,.0f}  [{acct_str}]"
