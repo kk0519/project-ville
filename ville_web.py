@@ -18,8 +18,119 @@ app = Flask(__name__)
 DB_PATH  = Path(__file__).parent / "ville_data.db"
 LOG_PATH = Path(__file__).parent / "ville_backtest.log"
 
-# ── Milestone definitions (Phase 10–13) ──────────────────────────
+CURRENT_PHASE = 10
+
+# ── Milestone definitions (Phase 1–13) ───────────────────────────
 MILESTONES = [
+    {
+        "phase": 1,
+        "emoji": "📐",
+        "title": "プロジェクト立ち上げ・アーキテクチャ設計",
+        "summary": "Polymarket予測市場監視エンジンの全体構造を設計。モジュール分割・データフロー・DB設計を確定。",
+        "tasks": [
+            ("要件定義・監視対象（Polymarket）の選定", True),
+            ("モジュール構成設計（fetcher/detector/calculator/stats/notifier）", True),
+            ("SQLiteスキーマ設計（market_snapshots/edge_events/virtual_trades）", True),
+            ("開発環境整備（Python3/pip/Flask/SQLite/DeepSeek API）", True),
+        ],
+    },
+    {
+        "phase": 2,
+        "emoji": "🌐",
+        "title": "データ取得基盤（fetcher.py）",
+        "summary": "Polymarket Gamma APIからリアルタイム市場データを取得するモジュールを構築。リトライ・エラー処理込み。",
+        "tasks": [
+            ("Gamma API（gamma-api.polymarket.com）の仕様調査・検証", True),
+            ("fetch_active_markets()：アクティブ市場一括取得実装", True),
+            ("parse_prices()：outcomePrices JSONパース・YES/NO価格抽出", True),
+            ("数値ID（id）とconditionId（hex）の識別ロジック確立", True),
+        ],
+    },
+    {
+        "phase": 3,
+        "emoji": "🔍",
+        "title": "エッジ検知エンジン（detector.py）",
+        "summary": "YES+NOの合計が1を下回る市場（歪み）を検知し、期待値（EV）を計算するコアエンジン。",
+        "tasks": [
+            ("MarketDataクラス設計（total/edgeプロパティ）", True),
+            ("detect_edge()：SUM≤0.98のエッジ検知ロジック", True),
+            ("calculate_ev()：手数料2%を考慮した期待値計算", True),
+            ("scan_triangle_arb()：AI識別ペアに限定した三角裁定スキャン", True),
+            ("check_logical_inconsistency()：論理的矛盾検知（手数料控除後）", True),
+        ],
+    },
+    {
+        "phase": 4,
+        "emoji": "💹",
+        "title": "取引シミュレーション（calculator.py）",
+        "summary": "仮想取引（バーチャルBet）をシミュレートし、ケリー基準に基づく最適Bet額を算出するモジュール。",
+        "tasks": [
+            ("simulate_trade()：仮想取引実行・PnL計算", True),
+            ("ケリー基準（Kelly Criterion）によるBet額算出", True),
+            ("仮想取引結果のSQLite永続化", True),
+        ],
+    },
+    {
+        "phase": 5,
+        "emoji": "🗄️",
+        "title": "統計・永続化（stats.py + database.py）",
+        "summary": "全市場スナップショット・エッジイベント・仮想取引をSQLiteに自動保存。勝率・期待値の統計算出。",
+        "tasks": [
+            ("database.py：SQLiteスキーマ作成・CRUD操作", True),
+            ("stats.py：勝率・EV合計・市場別統計の集計クエリ", True),
+            ("市場スナップショットの定期保存（全サイクル自動保存）", True),
+        ],
+    },
+    {
+        "phase": 6,
+        "emoji": "🤖",
+        "title": "AI解析エンジン（ai_analyst.py）",
+        "summary": "DeepSeek APIを使い、論理的関連市場ペアの自動識別とエッジ異常の事後分析を実装。24時間キャッシュ付き。",
+        "tasks": [
+            ("DeepSeek API連携・プロンプト設計", True),
+            ("find_related_pairs()：論理的関連市場ペアの自動識別", True),
+            ("analyze_anomaly()：エッジ異常の事後AI分析（10分後自動実行）", True),
+            ("24時間キャッシュによる不要API呼び出し削減", True),
+            ("ヒューリスティックフォールバック（API障害時の代替ロジック）", True),
+        ],
+    },
+    {
+        "phase": 7,
+        "emoji": "📐",
+        "title": "裁定スキャン高度化",
+        "summary": "三角裁定・論理的矛盾・イベントクラスター3種の裁定スキャンを完成。related_id_pairsによる誤検知ゼロ化。",
+        "tasks": [
+            ("scan_triangle_arb()：AI識別済みペアのみ対象に三角裁定を限定", True),
+            ("scan_event_cluster()：イベントキーワード別クラスター全組み合わせスキャン", True),
+            ("手数料2%/legを全計算に組み込み・偽陽性排除", True),
+            ("related_id_pairsがNone/空の場合に即空リスト返却（安全ガード）", True),
+        ],
+    },
+    {
+        "phase": 8,
+        "emoji": "🔔",
+        "title": "通知・異常分析（notifier.py）",
+        "summary": "Discord・LINE・SMTPによるエッジ検知通知。AI事後分析（10分後）の自動実行・DB保存・通知送信。",
+        "tasks": [
+            ("Discord Webhook通知実装（エッジ検知時即時通知）", True),
+            ("LINE Notify・SMTP通知の設定対応", True),
+            ("AI事後分析の非同期10分後自動実行", True),
+            ("anomaly_analysis テーブルへの分析結果永続化", True),
+        ],
+    },
+    {
+        "phase": 9,
+        "emoji": "⚙️",
+        "title": "長期稼働堅牢化（ville_main.py v3.1）",
+        "summary": "60分ハートビート・3%/5分ボラティリティ特異点・日次メンテナンスを実装。無人24時間稼働を実現。",
+        "tasks": [
+            ("60分ごとHEARTBEATログ出力・DB整合性自動チェック", True),
+            ("VOLATILITY_SINGULARITY：3%/5分超の価格変動自動検知", True),
+            ("日次メンテナンス（00:00 UTC）：古いスナップショット自動削除", True),
+            ("_prev_prices辞書による前サイクル比較・価格変動率追跡", True),
+            ("gc.collect()による長期稼働時のメモリリーク防止", True),
+        ],
+    },
     {
         "phase": 10,
         "emoji": "🛠️",
@@ -284,6 +395,45 @@ HTML = r"""<!DOCTYPE html>
   .anomaly-card .body { color: #c9d1d9; font-size: 12px; margin-top: 8px;
                         border-left: 3px solid var(--orange); padding-left: 10px; }
 
+  /* Timeline */
+  .timeline-wrap {
+    display: flex; align-items: flex-start; gap: 0;
+    overflow-x: auto; padding-bottom: 8px;
+  }
+  .tl-step {
+    display: flex; flex-direction: column; align-items: center;
+    flex: 1; min-width: 72px; position: relative;
+  }
+  .tl-step:not(:last-child)::after {
+    content: '';
+    position: absolute; top: 14px; left: calc(50% + 14px);
+    width: calc(100% - 28px); height: 2px;
+    background: var(--border);
+    z-index: 0;
+  }
+  .tl-step.done::after  { background: var(--green); }
+  .tl-step.current::after { background: var(--accent); }
+  .tl-dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: bold; position: relative; z-index: 1;
+    border: 2px solid var(--border); background: var(--bg); color: var(--muted);
+  }
+  .tl-step.done    .tl-dot { border-color: var(--green);  color: var(--green);  background: #0d1f14; }
+  .tl-step.current .tl-dot { border-color: var(--accent); color: #000; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+  .tl-step.future  .tl-dot { border-color: var(--border); }
+  .tl-label {
+    font-size: 10px; margin-top: 6px; text-align: center;
+    color: var(--muted); line-height: 1.3; max-width: 72px;
+  }
+  .tl-step.done    .tl-label { color: var(--green); }
+  .tl-step.current .tl-label { color: var(--accent); font-weight: bold; }
+  .tl-current-badge {
+    display: inline-block; background: var(--accent); color: #000;
+    font-size: 10px; font-weight: bold; border-radius: 3px;
+    padding: 1px 5px; margin-top: 4px;
+  }
+
   /* No-data */
   .no-data { color: var(--muted); padding: 24px; text-align: center; font-size: 12px; }
 
@@ -322,6 +472,37 @@ HTML = r"""<!DOCTYPE html>
 </header>
 
 <main>
+
+  <!-- ── Timeline ── -->
+  <div class="section-title">全体スケジュール（Phase 1 – 13）</div>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:24px 20px 16px;">
+    <div class="timeline-wrap">
+      {% for ph in milestones %}
+      {% if ph.phase < current_phase %}
+      <div class="tl-step done">
+      {% elif ph.phase == current_phase %}
+      <div class="tl-step current">
+      {% else %}
+      <div class="tl-step future">
+      {% endif %}
+        <div class="tl-dot">
+          {% if ph.phase < current_phase %}✓{% elif ph.phase == current_phase %}{{ ph.phase }}{% else %}{{ ph.phase }}{% endif %}
+        </div>
+        <div class="tl-label">
+          Ph.{{ ph.phase }}<br>{{ ph.emoji }}<br>{{ ph.title[:14] }}{% if ph.title|length > 14 %}…{% endif %}
+          {% if ph.phase == current_phase %}
+          <br><span class="tl-current-badge">現在地</span>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div style="margin-top:12px;font-size:11px;color:var(--muted)">
+      <span style="color:var(--green)">■ 完了 (1–9)</span> &nbsp;
+      <span style="color:var(--accent)">■ 現在地 (Phase {{ current_phase }})</span> &nbsp;
+      <span style="color:var(--border)">■ 未着手 ({{ current_phase + 1 }}–13)</span>
+    </div>
+  </div>
 
   <!-- ── Stats ── -->
   <div class="section-title">稼働ステータス</div>
@@ -364,7 +545,7 @@ HTML = r"""<!DOCTYPE html>
   </div>
 
   <!-- ── Roadmap ── -->
-  <div class="section-title">ロードマップ進捗（Phase 10 – 13）</div>
+  <div class="section-title">ロードマップ進捗（全 Phase 1 – 13）</div>
   <div class="phase-grid">
     {% for ph in milestones %}
     {% set done_cnt = ph.tasks | selectattr(1) | list | length %}
@@ -502,7 +683,7 @@ HTML = r"""<!DOCTYPE html>
 @app.route("/")
 def index():
     data = get_dashboard_data()
-    return render_template_string(HTML, milestones=MILESTONES, data=data)
+    return render_template_string(HTML, milestones=MILESTONES, data=data, current_phase=CURRENT_PHASE)
 
 
 @app.route("/api/data")

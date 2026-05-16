@@ -131,6 +131,45 @@
   .anomaly-card .body { color: #c9d1d9; font-size: 12px; margin-top: 8px;
                         border-left: 3px solid var(--orange); padding-left: 10px; }
 
+  /* Timeline */
+  .timeline-wrap {
+    display: flex; align-items: flex-start; gap: 0;
+    overflow-x: auto; padding-bottom: 8px;
+  }
+  .tl-step {
+    display: flex; flex-direction: column; align-items: center;
+    flex: 1; min-width: 72px; position: relative;
+  }
+  .tl-step:not(:last-child)::after {
+    content: '';
+    position: absolute; top: 14px; left: calc(50% + 14px);
+    width: calc(100% - 28px); height: 2px;
+    background: var(--border);
+    z-index: 0;
+  }
+  .tl-step.done::after  { background: var(--green); }
+  .tl-step.current::after { background: var(--accent); }
+  .tl-dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: bold; position: relative; z-index: 1;
+    border: 2px solid var(--border); background: var(--bg); color: var(--muted);
+  }
+  .tl-step.done    .tl-dot { border-color: var(--green);  color: var(--green);  background: #0d1f14; }
+  .tl-step.current .tl-dot { border-color: var(--accent); color: #000; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+  .tl-step.future  .tl-dot { border-color: var(--border); }
+  .tl-label {
+    font-size: 10px; margin-top: 6px; text-align: center;
+    color: var(--muted); line-height: 1.3; max-width: 72px;
+  }
+  .tl-step.done    .tl-label { color: var(--green); }
+  .tl-step.current .tl-label { color: var(--accent); font-weight: bold; }
+  .tl-current-badge {
+    display: inline-block; background: var(--accent); color: #000;
+    font-size: 10px; font-weight: bold; border-radius: 3px;
+    padding: 1px 5px; margin-top: 4px;
+  }
+
   /* No-data */
   .no-data { color: var(--muted); padding: 24px; text-align: center; font-size: 12px; }
 
@@ -163,19 +202,190 @@
   </div>
   <div class="ts">
     <span class="dot"></span>LIVE &nbsp;|&nbsp;
-    更新: — (リアルタイムデータは localhost:5000 で確認) &nbsp;|&nbsp;
+    更新: 2026-05-16 (static) &nbsp;|&nbsp;
     次回リフレッシュ: <span id="countdown">60s</span>
   </div>
 </header>
 
 <main>
 
+  <!-- ── Timeline ── -->
+  <div class="section-title">全体スケジュール（Phase 1 – 13）</div>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:24px 20px 16px;">
+    <div class="timeline-wrap">
+      
+      
+      <div class="tl-step done">
+      
+        <div class="tl-dot">
+          ✓
+        </div>
+        <div class="tl-label">
+          Ph.1<br>📐<br>プロジェクト立ち上げ・アーキ…
+          
+        </div>
+      </div>
+      
+      
+      <div class="tl-step done">
+      
+        <div class="tl-dot">
+          ✓
+        </div>
+        <div class="tl-label">
+          Ph.2<br>🌐<br>データ取得基盤（fetche…
+          
+        </div>
+      </div>
+      
+      
+      <div class="tl-step done">
+      
+        <div class="tl-dot">
+          ✓
+        </div>
+        <div class="tl-label">
+          Ph.3<br>🔍<br>エッジ検知エンジン（dete…
+          
+        </div>
+      </div>
+      
+      
+      <div class="tl-step done">
+      
+        <div class="tl-dot">
+          ✓
+        </div>
+        <div class="tl-label">
+          Ph.4<br>💹<br>取引シミュレーション（cal…
+          
+        </div>
+      </div>
+      
+      
+      <div class="tl-step done">
+      
+        <div class="tl-dot">
+          ✓
+        </div>
+        <div class="tl-label">
+          Ph.5<br>🗄️<br>統計・永続化（stats.p…
+          
+        </div>
+      </div>
+      
+      
+      <div class="tl-step done">
+      
+        <div class="tl-dot">
+          ✓
+        </div>
+        <div class="tl-label">
+          Ph.6<br>🤖<br>AI解析エンジン（ai_an…
+          
+        </div>
+      </div>
+      
+      
+      <div class="tl-step done">
+      
+        <div class="tl-dot">
+          ✓
+        </div>
+        <div class="tl-label">
+          Ph.7<br>📐<br>裁定スキャン高度化
+          
+        </div>
+      </div>
+      
+      
+      <div class="tl-step done">
+      
+        <div class="tl-dot">
+          ✓
+        </div>
+        <div class="tl-label">
+          Ph.8<br>🔔<br>通知・異常分析（notifi…
+          
+        </div>
+      </div>
+      
+      
+      <div class="tl-step done">
+      
+        <div class="tl-dot">
+          ✓
+        </div>
+        <div class="tl-label">
+          Ph.9<br>⚙️<br>長期稼働堅牢化（ville_…
+          
+        </div>
+      </div>
+      
+      
+      <div class="tl-step current">
+      
+        <div class="tl-dot">
+          10
+        </div>
+        <div class="tl-label">
+          Ph.10<br>🛠️<br>無人フォワードテスト（現在地…
+          
+          <br><span class="tl-current-badge">現在地</span>
+          
+        </div>
+      </div>
+      
+      
+      <div class="tl-step future">
+      
+        <div class="tl-dot">
+          11
+        </div>
+        <div class="tl-label">
+          Ph.11<br>💻<br>テスト実弾運用（指先の感覚を…
+          
+        </div>
+      </div>
+      
+      
+      <div class="tl-step future">
+      
+        <div class="tl-dot">
+          12
+        </div>
+        <div class="tl-label">
+          Ph.12<br>📈<br>本格実弾運用（ケリー基準の実…
+          
+        </div>
+      </div>
+      
+      
+      <div class="tl-step future">
+      
+        <div class="tl-dot">
+          13
+        </div>
+        <div class="tl-label">
+          Ph.13<br>🚀<br>大資本スケール運用（1,00…
+          
+        </div>
+      </div>
+      
+    </div>
+    <div style="margin-top:12px;font-size:11px;color:var(--muted)">
+      <span style="color:var(--green)">■ 完了 (1–9)</span> &nbsp;
+      <span style="color:var(--accent)">■ 現在地 (Phase 10)</span> &nbsp;
+      <span style="color:var(--border)">■ 未着手 (11–13)</span>
+    </div>
+  </div>
+
   <!-- ── Stats ── -->
   <div class="section-title">稼働ステータス</div>
   <div class="stat-grid">
     <div class="stat-card">
       <div class="label">今日のエッジ検知</div>
-      <div class="value">—</div>
+      <div class="value">0</div>
       <div class="sub">edge events / today</div>
     </div>
     <div class="stat-card">
@@ -210,8 +420,337 @@
   </div>
 
   <!-- ── Roadmap ── -->
-  <div class="section-title">ロードマップ進捗（Phase 10 – 13）</div>
+  <div class="section-title">ロードマップ進捗（全 Phase 1 – 13）</div>
   <div class="phase-grid">
+    
+    
+    
+    
+    <div class="phase-card">
+      <h3>
+        <span class="phase-num">Ph.1</span>
+        📐 プロジェクト立ち上げ・アーキテクチャ設計
+      </h3>
+      <p style="color:var(--muted);font-size:11px;margin-bottom:12px;line-height:1.7">Polymarket予測市場監視エンジンの全体構造を設計。モジュール分割・データフロー・DB設計を確定。</p>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>要件定義・監視対象（Polymarket）の選定</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>モジュール構成設計（fetcher/detector/calculator/stats/notifier）</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>SQLiteスキーマ設計（market_snapshots/edge_events/virtual_trades）</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>開発環境整備（Python3/pip/Flask/SQLite/DeepSeek API）</span>
+      </div>
+      
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:100%"></div>
+      </div>
+      <div class="pct">4/4 — 100%</div>
+    </div>
+    
+    
+    
+    
+    <div class="phase-card">
+      <h3>
+        <span class="phase-num">Ph.2</span>
+        🌐 データ取得基盤（fetcher.py）
+      </h3>
+      <p style="color:var(--muted);font-size:11px;margin-bottom:12px;line-height:1.7">Polymarket Gamma APIからリアルタイム市場データを取得するモジュールを構築。リトライ・エラー処理込み。</p>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>Gamma API（gamma-api.polymarket.com）の仕様調査・検証</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>fetch_active_markets()：アクティブ市場一括取得実装</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>parse_prices()：outcomePrices JSONパース・YES/NO価格抽出</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>数値ID（id）とconditionId（hex）の識別ロジック確立</span>
+      </div>
+      
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:100%"></div>
+      </div>
+      <div class="pct">4/4 — 100%</div>
+    </div>
+    
+    
+    
+    
+    <div class="phase-card">
+      <h3>
+        <span class="phase-num">Ph.3</span>
+        🔍 エッジ検知エンジン（detector.py）
+      </h3>
+      <p style="color:var(--muted);font-size:11px;margin-bottom:12px;line-height:1.7">YES+NOの合計が1を下回る市場（歪み）を検知し、期待値（EV）を計算するコアエンジン。</p>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>MarketDataクラス設計（total/edgeプロパティ）</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>detect_edge()：SUM≤0.98のエッジ検知ロジック</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>calculate_ev()：手数料2%を考慮した期待値計算</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>scan_triangle_arb()：AI識別ペアに限定した三角裁定スキャン</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>check_logical_inconsistency()：論理的矛盾検知（手数料控除後）</span>
+      </div>
+      
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:100%"></div>
+      </div>
+      <div class="pct">5/5 — 100%</div>
+    </div>
+    
+    
+    
+    
+    <div class="phase-card">
+      <h3>
+        <span class="phase-num">Ph.4</span>
+        💹 取引シミュレーション（calculator.py）
+      </h3>
+      <p style="color:var(--muted);font-size:11px;margin-bottom:12px;line-height:1.7">仮想取引（バーチャルBet）をシミュレートし、ケリー基準に基づく最適Bet額を算出するモジュール。</p>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>simulate_trade()：仮想取引実行・PnL計算</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>ケリー基準（Kelly Criterion）によるBet額算出</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>仮想取引結果のSQLite永続化</span>
+      </div>
+      
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:100%"></div>
+      </div>
+      <div class="pct">3/3 — 100%</div>
+    </div>
+    
+    
+    
+    
+    <div class="phase-card">
+      <h3>
+        <span class="phase-num">Ph.5</span>
+        🗄️ 統計・永続化（stats.py + database.py）
+      </h3>
+      <p style="color:var(--muted);font-size:11px;margin-bottom:12px;line-height:1.7">全市場スナップショット・エッジイベント・仮想取引をSQLiteに自動保存。勝率・期待値の統計算出。</p>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>database.py：SQLiteスキーマ作成・CRUD操作</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>stats.py：勝率・EV合計・市場別統計の集計クエリ</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>市場スナップショットの定期保存（全サイクル自動保存）</span>
+      </div>
+      
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:100%"></div>
+      </div>
+      <div class="pct">3/3 — 100%</div>
+    </div>
+    
+    
+    
+    
+    <div class="phase-card">
+      <h3>
+        <span class="phase-num">Ph.6</span>
+        🤖 AI解析エンジン（ai_analyst.py）
+      </h3>
+      <p style="color:var(--muted);font-size:11px;margin-bottom:12px;line-height:1.7">DeepSeek APIを使い、論理的関連市場ペアの自動識別とエッジ異常の事後分析を実装。24時間キャッシュ付き。</p>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>DeepSeek API連携・プロンプト設計</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>find_related_pairs()：論理的関連市場ペアの自動識別</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>analyze_anomaly()：エッジ異常の事後AI分析（10分後自動実行）</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>24時間キャッシュによる不要API呼び出し削減</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>ヒューリスティックフォールバック（API障害時の代替ロジック）</span>
+      </div>
+      
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:100%"></div>
+      </div>
+      <div class="pct">5/5 — 100%</div>
+    </div>
+    
+    
+    
+    
+    <div class="phase-card">
+      <h3>
+        <span class="phase-num">Ph.7</span>
+        📐 裁定スキャン高度化
+      </h3>
+      <p style="color:var(--muted);font-size:11px;margin-bottom:12px;line-height:1.7">三角裁定・論理的矛盾・イベントクラスター3種の裁定スキャンを完成。related_id_pairsによる誤検知ゼロ化。</p>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>scan_triangle_arb()：AI識別済みペアのみ対象に三角裁定を限定</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>scan_event_cluster()：イベントキーワード別クラスター全組み合わせスキャン</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>手数料2%/legを全計算に組み込み・偽陽性排除</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>related_id_pairsがNone/空の場合に即空リスト返却（安全ガード）</span>
+      </div>
+      
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:100%"></div>
+      </div>
+      <div class="pct">4/4 — 100%</div>
+    </div>
+    
+    
+    
+    
+    <div class="phase-card">
+      <h3>
+        <span class="phase-num">Ph.8</span>
+        🔔 通知・異常分析（notifier.py）
+      </h3>
+      <p style="color:var(--muted);font-size:11px;margin-bottom:12px;line-height:1.7">Discord・LINE・SMTPによるエッジ検知通知。AI事後分析（10分後）の自動実行・DB保存・通知送信。</p>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>Discord Webhook通知実装（エッジ検知時即時通知）</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>LINE Notify・SMTP通知の設定対応</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>AI事後分析の非同期10分後自動実行</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>anomaly_analysis テーブルへの分析結果永続化</span>
+      </div>
+      
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:100%"></div>
+      </div>
+      <div class="pct">4/4 — 100%</div>
+    </div>
+    
+    
+    
+    
+    <div class="phase-card">
+      <h3>
+        <span class="phase-num">Ph.9</span>
+        ⚙️ 長期稼働堅牢化（ville_main.py v3.1）
+      </h3>
+      <p style="color:var(--muted);font-size:11px;margin-bottom:12px;line-height:1.7">60分ハートビート・3%/5分ボラティリティ特異点・日次メンテナンスを実装。無人24時間稼働を実現。</p>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>60分ごとHEARTBEATログ出力・DB整合性自動チェック</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>VOLATILITY_SINGULARITY：3%/5分超の価格変動自動検知</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>日次メンテナンス（00:00 UTC）：古いスナップショット自動削除</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>_prev_prices辞書による前サイクル比較・価格変動率追跡</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>gc.collect()による長期稼働時のメモリリーク防止</span>
+      </div>
+      
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:100%"></div>
+      </div>
+      <div class="pct">5/5 — 100%</div>
+    </div>
     
     
     
@@ -372,14 +911,14 @@
   <!-- ── Last log line ── -->
   <div class="section-title">最終ログ行</div>
   <div class="log-box">
-    <div class="log-line">ville_main.py 起動後に localhost:5000 でリアルタイムデータを確認できます</div>
+    <div class="log-line">— (static snapshot)</div>
   </div>
 
 </main>
 
 <footer>
   <span>PROJECT VILLE v3.1 &nbsp;—&nbsp; Polymarket Simulation Engine</span>
-  <span>DB: Not found &nbsp;|&nbsp; — (リアルタイムデータは localhost:5000 で確認)</span>
+  <span>DB: Not found &nbsp;|&nbsp; 2026-05-16 (static)</span>
 </footer>
 
 </body>
