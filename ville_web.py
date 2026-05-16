@@ -258,7 +258,87 @@ def get_dashboard_data() -> dict:
         except Exception:
             pass
 
+    data["pace"] = _get_pace_data()
     return data
+
+
+def _get_pace_data() -> dict:
+    """Compute real-time operating pace metrics from DB."""
+    p: dict = {
+        "cycles_1h": 0, "cycles_24h": 0,
+        "markets_per_cycle": 0,
+        "edge_1h": 0, "edge_24h": 0,
+        "uptime_h": 0.0, "uptime_label": "—",
+        "avg_interval_sec": 0, "last_scan": "—",
+    }
+    if not DB_PATH.exists():
+        return p
+    try:
+        with _conn() as con:
+            # Distinct cycle timestamps in last 1h / 24h
+            r = con.execute("""
+                SELECT COUNT(DISTINCT ts) AS c1, MAX(ts) AS last
+                FROM market_snapshots WHERE ts > datetime('now','-1 hour')
+            """).fetchone()
+            if r:
+                p["cycles_1h"] = r["c1"] or 0
+                p["last_scan"] = (r["last"] or "—")[:16]
+
+            r = con.execute("""
+                SELECT COUNT(DISTINCT ts) AS c24
+                FROM market_snapshots WHERE ts > datetime('now','-24 hours')
+            """).fetchone()
+            if r:
+                p["cycles_24h"] = r["c24"] or 0
+
+            # Average markets monitored per cycle (last 1h)
+            r = con.execute("""
+                SELECT AVG(cnt) AS avg FROM
+                  (SELECT ts, COUNT(*) AS cnt FROM market_snapshots
+                   WHERE ts > datetime('now','-1 hour') GROUP BY ts)
+            """).fetchone()
+            if r and r["avg"]:
+                p["markets_per_cycle"] = round(r["avg"])
+
+            # Edge detection rate
+            r = con.execute("""
+                SELECT COUNT(*) AS c FROM edge_events
+                WHERE ts > datetime('now','-1 hour')
+            """).fetchone()
+            p["edge_1h"] = r["c"] if r else 0
+
+            r = con.execute("""
+                SELECT COUNT(*) AS c FROM edge_events
+                WHERE ts > datetime('now','-24 hours')
+            """).fetchone()
+            p["edge_24h"] = r["c"] if r else 0
+
+            # Uptime from first snapshot
+            r = con.execute("SELECT MIN(ts) AS first FROM market_snapshots").fetchone()
+            if r and r["first"]:
+                try:
+                    first_str = r["first"].replace("Z", "")
+                    first_dt = datetime.fromisoformat(first_str)
+                    now_dt = datetime.now(timezone.utc).replace(tzinfo=None)
+                    sec = (now_dt - first_dt).total_seconds()
+                    h = sec / 3600
+                    p["uptime_h"] = round(h, 1)
+                    if h >= 24:
+                        p["uptime_label"] = f"{h/24:.1f}日"
+                    elif h >= 1:
+                        p["uptime_label"] = f"{h:.1f}時間"
+                    else:
+                        p["uptime_label"] = f"{int(sec/60)}分"
+                except Exception:
+                    pass
+
+            # Average interval between cycles (seconds)
+            if p["cycles_24h"] > 1:
+                p["avg_interval_sec"] = round(86400 / p["cycles_24h"])
+
+    except Exception as e:
+        p["error"] = str(e)
+    return p
 
 
 # ── HTML Template ────────────────────────────────────────────────
@@ -502,6 +582,76 @@ HTML = r"""<!DOCTYPE html>
       <span style="color:var(--accent)">■ 現在地 (Phase {{ current_phase }})</span> &nbsp;
       <span style="color:var(--border)">■ 未着手 ({{ current_phase + 1 }}–13)</span>
     </div>
+  </div>
+
+  <!-- ── Operating Pace ── -->
+  <div class="section-title">稼働ペース（リアルタイム）</div>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px 24px;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px">
+
+      <div>
+        <div style="color:var(--muted);font-size:11px;margin-bottom:4px">スキャンサイクル / 時</div>
+        <div style="font-size:28px;font-weight:bold;color:var(--accent)">{{ data.pace.cycles_1h }}</div>
+        <div style="color:var(--muted);font-size:11px">cycles / hour</div>
+      </div>
+
+      <div>
+        <div style="color:var(--muted);font-size:11px;margin-bottom:4px">スキャンサイクル / 日</div>
+        <div style="font-size:28px;font-weight:bold;color:var(--accent)">{{ '{:,}'.format(data.pace.cycles_24h) }}</div>
+        <div style="color:var(--muted);font-size:11px">cycles / 24h</div>
+      </div>
+
+      <div>
+        <div style="color:var(--muted);font-size:11px;margin-bottom:4px">監視市場数 / サイクル</div>
+        <div style="font-size:28px;font-weight:bold;color:var(--text)">{{ data.pace.markets_per_cycle }}</div>
+        <div style="color:var(--muted);font-size:11px">markets / cycle</div>
+      </div>
+
+      <div>
+        <div style="color:var(--muted);font-size:11px;margin-bottom:4px">平均サイクル間隔</div>
+        <div style="font-size:28px;font-weight:bold;color:var(--text)">{{ data.pace.avg_interval_sec }}</div>
+        <div style="color:var(--muted);font-size:11px">seconds / cycle</div>
+      </div>
+
+      <div>
+        <div style="color:var(--muted);font-size:11px;margin-bottom:4px">エッジ検知 / 時</div>
+        <div style="font-size:28px;font-weight:bold;
+          {% if data.pace.edge_1h > 0 %}color:var(--green){% else %}color:var(--muted){% endif %}">
+          {{ data.pace.edge_1h }}
+        </div>
+        <div style="color:var(--muted);font-size:11px">detections / hour</div>
+      </div>
+
+      <div>
+        <div style="color:var(--muted);font-size:11px;margin-bottom:4px">エッジ検知 / 日</div>
+        <div style="font-size:28px;font-weight:bold;
+          {% if data.pace.edge_24h > 0 %}color:var(--green){% else %}color:var(--muted){% endif %}">
+          {{ data.pace.edge_24h }}
+        </div>
+        <div style="color:var(--muted);font-size:11px">detections / 24h</div>
+      </div>
+
+      <div>
+        <div style="color:var(--muted);font-size:11px;margin-bottom:4px">継続稼働時間</div>
+        <div style="font-size:28px;font-weight:bold;color:var(--orange)">{{ data.pace.uptime_label }}</div>
+        <div style="color:var(--muted);font-size:11px">({{ data.pace.uptime_h }}h 累計)</div>
+      </div>
+
+      <div>
+        <div style="color:var(--muted);font-size:11px;margin-bottom:4px">最終スキャン</div>
+        <div style="font-size:14px;font-weight:bold;color:var(--text);margin-top:8px">{{ data.pace.last_scan }}</div>
+        <div style="color:var(--muted);font-size:11px">UTC</div>
+      </div>
+
+    </div>
+    {% if data.pace.avg_interval_sec > 0 %}
+    <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);
+                display:flex;gap:24px;flex-wrap:wrap;font-size:11px;color:var(--muted)">
+      <span>📊 24h 合計スキャン数: <strong style="color:var(--text)">{{ '{:,}'.format(data.pace.cycles_24h * (data.pace.markets_per_cycle or 1)) }}</strong> 市場</span>
+      <span>⚡ エッジ検知率: <strong style="color:var(--green)">{{ '%.2f' % (data.pace.edge_24h / max(data.pace.cycles_24h, 1) * 100) }}%</strong> / サイクル</span>
+      <span>🔄 1分あたり: <strong style="color:var(--text)">{{ '%.1f' % (data.pace.cycles_1h / 60.0) }}</strong> サイクル</span>
+    </div>
+    {% endif %}
   </div>
 
   <!-- ── Stats ── -->
