@@ -4,14 +4,14 @@ import time
 import requests
 
 GAMMA_API = "https://gamma-api.polymarket.com"
-MAX_RETRIES = 5
-RETRY_BASE  = 3  # seconds
+MAX_RETRIES = 2
+RETRY_BASE  = 1  # seconds
 
 
 def _get(url: str, params: dict = None, retries: int = MAX_RETRIES) -> dict | list:
     for attempt in range(retries):
         try:
-            r = requests.get(url, params=params, timeout=15)
+            r = requests.get(url, params=params, timeout=8)
             r.raise_for_status()
             return r.json()
         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:

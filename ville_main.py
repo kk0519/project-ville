@@ -40,15 +40,16 @@ BOLD   = "\033[1m";   RESET  = "\033[0m"
 # ── Config ───────────────────────────────────────────────────────
 CAPITAL_JPY        = 100_000
 EDGE_THRESHOLD     = 0.02
-POLL_INTERVAL      = 60        # seconds between cycles
-MARKET_LIMIT       = 15
+POLL_INTERVAL      = 15        # seconds between cycles (target: ~15s total cycle time)
+MARKET_LIMIT       = 50        # markets per cycle
 LATENCY_EXPIRY_MS  = 2_000
 LOG_FILE           = Path(__file__).parent / "ville_backtest.log"
 
 VOLATILITY_THRESHOLD        = 0.03   # 3% price change triggers singularity
-VOLATILITY_WINDOW_CYCLES    = 5      # compare current vs price 5 cycles ago (~5 min)
-HEARTBEAT_INTERVAL_CYCLES   = 60     # heartbeat every 60 cycles (~1 hour)
-MAINTENANCE_INTERVAL_CYCLES = 1440   # self-maintenance every 1440 cycles (~24 hours)
+VOLATILITY_WINDOW_CYCLES    = 20     # ~5 min at 15s/cycle (was 5 @ 60s)
+HEARTBEAT_INTERVAL_CYCLES   = 240    # ~1 hour at 15s/cycle (was 60 @ 60s)
+MAINTENANCE_INTERVAL_CYCLES = 5760   # ~24 hours at 15s/cycle (was 1440 @ 60s)
+AI_REFRESH_INTERVAL_CYCLES  = 240    # refresh AI pairs every ~1 hour
 
 # ── Logging setup ────────────────────────────────────────────────
 logging.basicConfig(
@@ -64,6 +65,10 @@ _price_history: dict[str, deque] = defaultdict(
 )
 _latency_ring: deque[float] = deque(maxlen=HEARTBEAT_INTERVAL_CYCLES)
 _prev_prices:  dict[str, float] = {}
+
+# AI pairs — updated in background thread; main loop reads without blocking
+_ai_pairs:      list[dict]       = []
+_ai_pairs_lock: threading.Lock  = threading.Lock()
 
 
 # ── Helpers ──────────────────────────────────────────────────────
@@ -130,6 +135,23 @@ def _fire_singularity_analysis(md: MarketData, change: float):
     save_anomaly_analysis(md.market_id, md.question,
                           md.edge, analysis, "deepseek-chat:volatility")
     logging.info(f"SINGULARITY_ANALYSIS | {md.question[:50]} | {analysis[:100]}")
+
+
+def _refresh_ai_pairs_bg(questions: list[str]):
+    """Background: call DeepSeek (or heuristic) and update _ai_pairs atomically."""
+    global _ai_pairs
+    try:
+        pairs = find_related_pairs(questions)
+        with _ai_pairs_lock:
+            _ai_pairs = pairs
+        logging.info(f"AI_PAIRS_REFRESH | {len(pairs)} pairs updated")
+    except Exception as e:
+        logging.warning(f"AI_PAIRS_REFRESH_FAIL | {e}")
+
+
+def _notify_bg(fn, *args, **kwargs):
+    """Fire-and-forget wrapper: run notification in daemon thread."""
+    threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
 
 
 def check_volatility_singularity(markets: list[MarketData], cycle: int):
@@ -270,7 +292,7 @@ def print_stats_panel():
 
 
 # ── Main loop ────────────────────────────────────────────────────
-def run_cycle(cycle: int, ai_pairs: list[dict] | None = None) -> int:
+def run_cycle(cycle: int) -> int:
     print_banner(cycle)
 
     t0      = time.time()
@@ -302,7 +324,9 @@ def run_cycle(cycle: int, ai_pairs: list[dict] | None = None) -> int:
     # ── Build related-pair ID set from AI analyst results ─────────
     q_to_id = {md.question: md.market_id for md in markets}
     related_id_pairs: set[frozenset[str]] = set()
-    for pair in (ai_pairs or []):
+    with _ai_pairs_lock:
+        current_ai_pairs = list(_ai_pairs)
+    for pair in current_ai_pairs:
         id_a = q_to_id.get(pair.get("market_a", ""))
         id_b = q_to_id.get(pair.get("market_b", ""))
         if id_a and id_b:
@@ -335,9 +359,9 @@ def run_cycle(cycle: int, ai_pairs: list[dict] | None = None) -> int:
                             latency_ms, expired,
                             price_change_rate=pch)
 
-            # ── Notification: edge anomaly ────────────────────
-            notify_edge_anomaly(md.question, md.edge, ev_jpy, ev["best_side"],
-                                price_change_rate=pch)
+            # ── Notification: edge anomaly (non-blocking) ────
+            _notify_bg(notify_edge_anomaly, md.question, md.edge, ev_jpy,
+                       ev["best_side"], price_change_rate=pch)
 
             status_txt = "失効（Expired）→ 損益不計上" if expired else "仮想エントリー記録済"
             print(f"      {GREEN}→ {status_txt} ({LOG_FILE.name}){RESET}")
@@ -375,8 +399,9 @@ def run_cycle(cycle: int, ai_pairs: list[dict] | None = None) -> int:
         logging.info(
             f"TRIANGLE | chain={tri['chain']} | profit={tri['compound_profit']:.4f}"
         )
-        # ── Notification: triangle arb (≥2% only) ────────────
-        notify_triangle_anomaly(tri["chain"], tri["prices"], tri["compound_profit"])
+        # ── Notification: triangle arb (≥2%, non-blocking) ──
+        _notify_bg(notify_triangle_anomaly, tri["chain"], tri["prices"],
+                   tri["compound_profit"])
 
     if arb_found == 0:
         print(f"  {GREEN}✓ 今サイクル: アービトラージ機会なし{RESET}")
@@ -394,38 +419,37 @@ def run_cycle(cycle: int, ai_pairs: list[dict] | None = None) -> int:
 
 
 def main():
-    print(f"{CYAN}[VILLE v3.1] 起動 — DB初期化・市場リスト取得中...{RESET}")
+    print(f"{CYAN}[VILLE v3.1] 起動 — DB初期化中...{RESET}")
     init_db()
 
+    # ── First market fetch (fast) ─────────────────────────────────
     raw = fetch_active_markets(limit=MARKET_LIMIT)
     if not raw:
         print(f"{RED}[VILLE] 市場取得失敗。終了。{RESET}")
         sys.exit(1)
+    market_count = len(raw)
 
-    questions = [m.get("question", "") for m in raw[:MARKET_LIMIT] if m.get("question")]
-    ai_pairs  = find_related_pairs(questions)
-    if ai_pairs:
-        print(f"{CYAN}[AI] 論理依存ペア {len(ai_pairs)}件検出:{RESET}")
-        for p in ai_pairs[:5]:
-            print(f"  {p['market_a'][:45]:<45}  →implies→  {p['market_b'][:45]}")
-
-    market_count = len(raw[:MARKET_LIMIT])
+    # ── Background AI pair detection (non-blocking startup) ───────
+    questions = [m.get("question", "") for m in raw if m.get("question")]
+    threading.Thread(
+        target=_refresh_ai_pairs_bg, args=(questions,), daemon=True
+    ).start()
+    print(f"{CYAN}[AI] 論理依存ペア検出をバックグラウンドで開始...{RESET}")
 
     # ── Notification channel status ───────────────────────────────
     channels = channels_active()
     if channels:
         ch_str = "/".join(channels)
         print(f"\n{GREEN}[通知] 有効チャネル: {ch_str}{RESET}")
-        sent = notify_startup(market_count)
-        status = f"{GREEN}送信成功{RESET}" if sent else f"{YELLOW}送信失敗（設定確認を）{RESET}"
-        print(f"[通知] スタートアップテスト通知 → {status}")
+        _notify_bg(notify_startup, market_count)
     else:
         print(f"\n{YELLOW}[通知] チャネル未設定 — 通知は無効{RESET}")
         print_notification_guide()
 
     print(f"\n[VILLE] 監視市場数    : {market_count}")
+    print(f"[VILLE] サイクル間隔  : {POLL_INTERVAL}秒")
     print(f"[VILLE] ハートビート  : {HEARTBEAT_INTERVAL_CYCLES}サイクル毎 (~1時間)")
-    print(f"[VILLE] ボラ特異点    : {VOLATILITY_THRESHOLD:.0%}以上/{VOLATILITY_WINDOW_CYCLES}分で検知")
+    print(f"[VILLE] ボラ特異点    : {VOLATILITY_THRESHOLD:.0%}以上/{VOLATILITY_WINDOW_CYCLES}cyc毎で検知")
     print(f"[VILLE] 日次メンテ    : {MAINTENANCE_INTERVAL_CYCLES}サイクル毎 (~24時間)\n")
 
     cycle          = 0
@@ -433,8 +457,9 @@ def main():
 
     while True:
         cycle += 1
+        t_cycle_start = time.time()
         try:
-            result = run_cycle(cycle, ai_pairs)
+            result = run_cycle(cycle)
             if result > 0:
                 last_mkt_count = result
         except KeyboardInterrupt:
@@ -451,7 +476,19 @@ def main():
         if cycle % MAINTENANCE_INTERVAL_CYCLES == 0:
             do_daily_maintenance()
 
-        time.sleep(POLL_INTERVAL)
+        # ── Periodic AI pair refresh (every ~1 hour, background) ──
+        if cycle % AI_REFRESH_INTERVAL_CYCLES == 0:
+            raw_q = fetch_active_markets(limit=MARKET_LIMIT)
+            if raw_q:
+                qs = [m.get("question", "") for m in raw_q if m.get("question")]
+                threading.Thread(
+                    target=_refresh_ai_pairs_bg, args=(qs,), daemon=True
+                ).start()
+
+        # ── Adaptive sleep: subtract cycle execution time ─────────
+        elapsed = time.time() - t_cycle_start
+        sleep_sec = max(0.5, POLL_INTERVAL - elapsed)
+        time.sleep(sleep_sec)
 
 
 if __name__ == "__main__":
