@@ -13,7 +13,6 @@ Usage in main loop:
              liquidity_depth=depth.ask_depth if depth else None)
 """
 import logging
-from dataclasses import dataclass
 from typing import NamedTuple
 
 import requests

@@ -22,7 +22,6 @@ from rich.panel     import Panel
 from rich.layout    import Layout
 from rich.live      import Live
 from rich.text      import Text
-from rich.columns   import Columns
 from rich import box
 
 from modules.fetcher     import fetch_active_markets, fetch_market_by_id, parse_prices

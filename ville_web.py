@@ -6,7 +6,6 @@ Usage (WSL bash, /mnt/c/Vile directory):
   python3 ville_web.py
   Open: http://localhost:5000
 """
-import re
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
@@ -255,8 +254,8 @@ def get_dashboard_data() -> dict:
 
             non_empty = [l for l in reversed(lines) if l.strip()]
             data["last_log_line"] = non_empty[0] if non_empty else "—"
-        except Exception:
-            pass
+        except Exception as e:
+            data["last_log_line"] = f"log read error: {e}"
 
     data["pace"] = _get_pace_data()
     return data
@@ -329,8 +328,9 @@ def _get_pace_data() -> dict:
                         p["uptime_label"] = f"{h:.1f}時間"
                     else:
                         p["uptime_label"] = f"{int(sec/60)}分"
-                except Exception:
-                    pass
+                except Exception as e:
+                    p["uptime_label"] = "—"
+                    import logging; logging.debug(f"uptime_calc error: {e}")
 
             # Average interval between cycles (seconds)
             if p["cycles_24h"] > 1:

@@ -12,8 +12,6 @@ Usage:
 """
 
 import argparse
-import sys
-from datetime import datetime, timezone
 
 from modules.database  import init_db, load_all_snapshots, get_trend_report, DB_PATH
 
