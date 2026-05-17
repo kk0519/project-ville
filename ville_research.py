@@ -187,7 +187,6 @@ def main():
         else:
             bt_results = run_backtest(snapshots)
             print_backtest_table(bt_results)
-            results = bt_results
 
             # Insight summary
             best = max(bt_results, key=lambda r: r["total_ev"])

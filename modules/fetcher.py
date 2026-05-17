@@ -32,6 +32,7 @@ def _get(url: str, params: dict = None, retries: int = MAX_RETRIES) -> dict | li
                 raise RuntimeError(f"API unreachable after {retries} attempts: {e}") from e
         except requests.exceptions.HTTPError as e:
             raise RuntimeError(f"HTTP error {e.response.status_code}: {url}") from e
+    raise RuntimeError(f"_get: retries exhausted for {url}")
 
 
 def fetch_active_markets(limit: int = 20) -> list[dict]:

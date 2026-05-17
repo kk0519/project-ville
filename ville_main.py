@@ -185,7 +185,7 @@ def _web_sync_worker():
         time.sleep(WEB_SYNC_INTERVAL_SEC)
         try:
             data = get_dashboard_data()
-            env  = Environment(autoescape=False)   # static HTML; no user input in template
+            env  = Environment(autoescape=True)
             env.globals["max"] = max
             html = env.from_string(HTML).render(
                 milestones=MILESTONES, data=data, current_phase=CURRENT_PHASE

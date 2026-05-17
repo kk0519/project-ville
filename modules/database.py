@@ -2,6 +2,7 @@
 import hashlib
 import json
 import sqlite3
+from sqlite3 import OperationalError as _SqliteOpError
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
@@ -111,8 +112,8 @@ def init_db():
         ):
             try:
                 c.execute(sql)
-            except Exception:
-                pass
+            except _SqliteOpError:
+                pass  # column already exists — expected on re-init
 
 
 def save_snapshot(market_id: str, question: str,
