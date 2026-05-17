@@ -2,7 +2,6 @@
 import hashlib
 import json
 import sqlite3
-from sqlite3 import OperationalError as _SqliteOpError
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
@@ -112,7 +111,7 @@ def init_db():
         ):
             try:
                 c.execute(sql)
-            except _SqliteOpError:
+            except sqlite3.OperationalError:
                 pass  # column already exists — expected on re-init
 
 
