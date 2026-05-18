@@ -13,24 +13,27 @@ Usage in main loop:
              liquidity_depth=depth.ask_depth if depth else None)
 """
 import logging
+import time
 from typing import NamedTuple
 
 import requests
 
-CLOB_API      = "https://clob.polymarket.com"
-DEPTH_TIMEOUT = 4    # seconds — must not block the 15s main cycle
-PRICE_WINDOW  = 0.05  # sum depths within ±5% of best price
+CLOB_API        = "https://clob.polymarket.com"
+DEPTH_TIMEOUT   = 4     # seconds — must not block the 15s main cycle
+PRICE_WINDOW    = 0.05  # sum depths within ±5% of best price
+STALE_BOOK_SECS = 5.0   # reject order book data older than this (real-money slippage risk)
 
 
 class DepthSnapshot(NamedTuple):
-    token_id:   str
-    bid_depth:  float   # total available size on bid side near best
-    ask_depth:  float   # total available size on ask side near best
-    best_bid:   float   # highest bid price
-    best_ask:   float   # lowest ask price
-    spread:     float   # best_ask - best_bid
-    levels_bid: int     # number of bid price levels within window
-    levels_ask: int     # number of ask price levels within window
+    token_id:    str
+    bid_depth:   float   # total available size on bid side near best
+    ask_depth:   float   # total available size on ask side near best
+    best_bid:    float   # highest bid price
+    best_ask:    float   # lowest ask price
+    spread:      float   # best_ask - best_bid
+    levels_bid:  int     # number of bid price levels within window
+    levels_ask:  int     # number of ask price levels within window
+    book_age_ms: float = 0.0  # milliseconds since book was published (0 = no timestamp in response)
 
     def impact_cost_jpy(self, order_size_jpy: float,
                          price_per_share: float) -> float:
@@ -69,6 +72,23 @@ def fetch_depth(token_id: str,
         r.raise_for_status()
         data = r.json()
 
+        # ── Freshness check: reject stale books before any calculation ─────────
+        # Polymarket CLOB returns "timestamp" (ms epoch). If the book is older
+        # than STALE_BOOK_SECS, slippage estimates are unreliable for real trades.
+        book_age_ms = 0.0
+        ts_raw = data.get("timestamp")
+        if ts_raw is not None:
+            try:
+                book_age_ms = time.time() * 1000 - float(ts_raw)
+                if book_age_ms > STALE_BOOK_SECS * 1000:
+                    logging.info(
+                        f"BOOK_STALE | token={token_id[:20]} | age={book_age_ms:.0f}ms "
+                        f"(>{STALE_BOOK_SECS:.0f}s) — skipped"
+                    )
+                    return None
+            except (ValueError, TypeError):
+                pass  # malformed timestamp — proceed without freshness guard
+
         bids = [(float(b["price"]), float(b["size"]))
                 for b in data.get("bids", []) if b.get("price") and b.get("size")]
         asks = [(float(a["price"]), float(a["size"]))
@@ -85,21 +105,22 @@ def fetch_depth(token_id: str,
         near_asks = [(p, s) for p, s in asks if p <= best_ask + price_window]
 
         return DepthSnapshot(
-            token_id   = token_id,
-            bid_depth  = sum(s for _, s in near_bids),
-            ask_depth  = sum(s for _, s in near_asks),
-            best_bid   = best_bid,
-            best_ask   = best_ask,
-            spread     = best_ask - best_bid,
-            levels_bid = len(near_bids),
-            levels_ask = len(near_asks),
+            token_id    = token_id,
+            bid_depth   = sum(s for _, s in near_bids),
+            ask_depth   = sum(s for _, s in near_asks),
+            best_bid    = best_bid,
+            best_ask    = best_ask,
+            spread      = best_ask - best_bid,
+            levels_bid  = len(near_bids),
+            levels_ask  = len(near_asks),
+            book_age_ms = book_age_ms,
         )
 
     except requests.exceptions.Timeout:
-        logging.debug(f"DEPTH_TIMEOUT | token={token_id[:20]}")
+        logging.info(f"DEPTH_TIMEOUT | token={token_id[:20]}")
         return None
     except Exception as e:
-        logging.debug(f"DEPTH_FAIL | token={token_id[:20]} | {e}")
+        logging.info(f"DEPTH_FAIL | token={token_id[:20]} | {e}")
         return None
 
 
@@ -125,9 +146,12 @@ def parse_clob_token_id(market: dict) -> "str | None":
 def depth_summary(snap: DepthSnapshot, order_jpy: float,
                   yes_price: float) -> str:
     """One-line depth summary for terminal output."""
-    impact = snap.impact_cost_jpy(order_jpy, yes_price)
+    impact   = snap.impact_cost_jpy(order_jpy, yes_price)
+    age_str  = (f"  板鮮度={snap.book_age_ms:.0f}ms"
+                if snap.book_age_ms > 0 else "")
     return (
         f"深さ ask={snap.ask_depth:.0f}shares  "
         f"spread={snap.spread:.4f}  "
         f"影響コスト¥{impact:,.0f}({order_jpy/1e4:.0f}万円注文時)"
+        f"{age_str}"
     )

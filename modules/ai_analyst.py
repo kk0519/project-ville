@@ -15,22 +15,40 @@ Given a list of market questions, identify pairs where one market LOGICALLY IMPL
 Example: "Will BTC exceed $80k?" logically implies "Will BTC exceed $70k?" must also be true.
 Return ONLY a valid JSON array. No explanation outside the JSON."""
 
-_USER_TEMPLATE = """Analyze these prediction market questions for logical dependencies:
+_USER_TEMPLATE = """Analyze these prediction market questions for STRICT logical dependencies.
 
 {markets}
+
+STRICT rule: only include pairs where B MATHEMATICALLY GUARANTEES A is true.
+CRITICAL DIRECTION RULE:
+  market_a = the BROADER/EASIER market (implied by B). It has a LATER deadline OR LOWER threshold.
+  market_b = the NARROWER/HARDER market (the implicant). It has an EARLIER deadline OR HIGHER threshold.
+
+VALID strict implications (correct direction):
+- A="BTC > $76k on May 18"  B="BTC > $82k on May 18"  (B harder: higher threshold, same date)
+- A="Score > 205.5"          B="Score > 210.5"          (B harder: higher O/U line)
+- A="Event X by May 24"      B="Event X by May 21"      (B harder: EARLIER deadline)
+- A="Regime falls by June 30" B="Regime falls by May 31" (B harder: EARLIER deadline)
+- A="Confirmed before 2027"  B="Confirmed by May 31"    (B harder: EARLIER/STRICTER deadline)
+
+INVALID (do NOT include):
+- Cross-timeframe: "$150k by June" and "$76k on May 18" are different time dimensions
+- "$150k by June" and "$85k in May" — different time dimensions
+- "peace deal by X" and "meeting by X" — probabilistic, NOT mathematical guarantee
+- Any pair where implication is only likely, not certain
 
 Return a JSON array of objects:
 [
   {{
-    "market_a": "<question of the broader/lower-threshold market>",
-    "market_b": "<question of the narrower/higher-threshold market>",
-    "reason": "<one-line explanation of the logical dependency>",
+    "market_a": "<BROADER/LATER/EASIER market — the one that B guarantees>",
+    "market_b": "<NARROWER/EARLIER/HARDER market — the one that implies A>",
+    "reason": "<one-line: why B guarantees A>",
     "direction": "B implies A",
     "confidence": <0.0-1.0>
   }}
 ]
 
-Only include pairs with confidence >= 0.6. If none found, return [].
+Only include pairs with confidence >= 0.95 (strict logical guarantees only). If none found, return [].
 """
 
 
@@ -59,7 +77,8 @@ def _api_call(questions: list[str], api_key: str) -> list[dict]:
             content = r.json()["choices"][0]["message"]["content"].strip()
             # Strip markdown code fences if present
             if content.startswith("```"):
-                content = content.split("```")[1]
+                parts = content.split("```")
+                content = parts[1] if len(parts) > 1 else content.lstrip("`")
                 if content.startswith("json"):
                     content = content[4:]
             return json.loads(content)
@@ -69,6 +88,74 @@ def _api_call(questions: list[str], api_key: str) -> list[dict]:
         except (json.JSONDecodeError, KeyError, IndexError):
             return []
     return []
+
+
+def _normalize_direction(p: dict) -> dict:
+    """
+    Ensure market_a=broader(later deadline/lower threshold) and market_b=narrower.
+    Detects and corrects cases where the AI swapped A and B for deadline-type markets.
+    The earlier/harder deadline must be market_b.
+    """
+    import re
+    ma, mb = p.get("market_a", ""), p.get("market_b", "")
+
+    # Month-rank map for deadline comparison
+    _MONTH_RANK = {
+        "jan": 1, "feb": 2, "mar": 3, "apr": 4, "may": 5, "jun": 6,
+        "jul": 7, "aug": 8, "sep": 9, "oct": 10, "nov": 11, "dec": 12,
+    }
+
+    def extract_year(text: str) -> int | None:
+        m = re.search(r'\b(202\d)\b', text)
+        return int(m.group(1)) if m else None
+
+    def extract_month(text: str) -> int | None:
+        m = re.search(r'\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\w*', text, re.I)
+        return _MONTH_RANK.get(m.group(1).lower()[:3]) if m else None
+
+    # For deadline markets: market_a should have the LATER deadline.
+    # If market_a has an EARLIER month than market_b → direction is backwards → swap.
+    yr_a, yr_b = extract_year(ma), extract_year(mb)
+    mo_a, mo_b = extract_month(ma), extract_month(mb)
+
+    # Only auto-swap when both have the same event structure (shared base text after removing dates)
+    base_a = re.sub(r'\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\w*\s*\d{0,2},?\s*\d{4}?\b', 'X', ma, flags=re.I)
+    base_b = re.sub(r'\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\w*\s*\d{0,2},?\s*\d{4}?\b', 'X', mb, flags=re.I)
+    base_a = re.sub(r'\b202\d\b', 'X', base_a)
+    base_b = re.sub(r'\b202\d\b', 'X', base_b)
+
+    if base_a.lower() == base_b.lower() and mo_a and mo_b:
+        yr_a = yr_a or 2026
+        yr_b = yr_b or 2026
+        deadline_a = yr_a * 12 + mo_a
+        deadline_b = yr_b * 12 + mo_b
+        if deadline_a < deadline_b:
+            # market_a has EARLIER deadline → should be market_b
+            p = dict(p)
+            p["market_a"], p["market_b"] = mb, ma
+            logging.debug(f"DIRECTION_FIX | swapped: now A={mb[:40]} B={ma[:40]}")
+    return p
+
+
+def _clean_pairs(raw: list[dict]) -> list[dict]:
+    """Filter junk pairs and normalize direction."""
+    seen: set[tuple] = set()
+    result = []
+    for p in raw:
+        if not isinstance(p, dict):
+            continue
+        ma, mb = p.get("market_a", ""), p.get("market_b", "")
+        if not ma or not mb or ma == mb:
+            continue
+        if float(p.get("confidence", 0)) < 0.95:
+            continue
+        p = _normalize_direction(p)
+        key = (p.get("market_a", ""), p.get("market_b", ""))
+        if key in seen:
+            continue
+        seen.add(key)
+        result.append(p)
+    return result
 
 
 def find_related_pairs(questions: list[str]) -> list[dict]:
@@ -89,14 +176,18 @@ def find_related_pairs(questions: list[str]) -> list[dict]:
 
     cache_key = make_cache_key(questions)
 
-    # 1. Fresh cache hit
+    # 1. Fresh cache hit — re-run filter in case threshold was raised since caching
     cached = get_cached_pairs(cache_key)
     if cached is not None:
-        return cached
+        filtered = _clean_pairs(cached)
+        if filtered:
+            return filtered
+        # All cached pairs filtered out → fall through to live call
 
     # 2. Live call
     api_key = os.environ.get("DEEPSEEK_API_KEY", "")
-    pairs   = _api_call(questions, api_key) if api_key else _heuristic_fallback(questions)
+    raw     = _api_call(questions, api_key) if api_key else _heuristic_fallback(questions)
+    pairs   = _clean_pairs(raw)
 
     if pairs:
         save_pair_cache(cache_key, pairs)   # only persists non-empty results

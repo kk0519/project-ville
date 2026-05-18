@@ -173,6 +173,25 @@
   /* No-data */
   .no-data { color: var(--muted); padding: 24px; text-align: center; font-size: 12px; }
 
+  /* Changelog */
+  .cl-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px 20px; margin-bottom: 10px;
+    display: grid; grid-template-columns: 90px 1fr; gap: 16px;
+  }
+  .cl-meta { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+  .cl-date { color: var(--muted); font-size: 11px; }
+  .cl-tag  {
+    display: inline-block; padding: 2px 9px; border-radius: 20px;
+    font-size: 10px; font-weight: bold; letter-spacing: .5px;
+  }
+  .cl-tag-red    { background: #4d1f1f; color: var(--red); }
+  .cl-tag-accent { background: #0d2e28; color: var(--accent); }
+  .cl-tag-yellow { background: #3d3110; color: var(--yellow); }
+  .cl-body h4 { font-size: 13px; color: var(--text); margin-bottom: 8px; }
+  .cl-body ul { padding-left: 16px; }
+  .cl-body li { color: var(--muted); font-size: 12px; line-height: 1.8; }
+
   /* Footer */
   footer {
     margin: 40px 32px 24px; color: var(--muted); font-size: 11px;
@@ -202,7 +221,7 @@
   </div>
   <div class="ts">
     <span class="dot"></span>LIVE &nbsp;|&nbsp;
-    更新: 2026-05-18 06:26:44 UTC &nbsp;|&nbsp;
+    更新: 2026-05-18 06:28:35 UTC &nbsp;|&nbsp;
     次回リフレッシュ: <span id="countdown">60s</span>
   </div>
 </header>
@@ -413,7 +432,7 @@
 
       <div>
         <div style="color:var(--muted);font-size:11px;margin-bottom:4px">スキャンサイクル / 日</div>
-        <div style="font-size:28px;font-weight:bold;color:var(--accent)">5,728</div>
+        <div style="font-size:28px;font-weight:bold;color:var(--accent)">5,727</div>
         <div style="color:var(--muted);font-size:11px">cycles / 24h</div>
       </div>
 
@@ -450,12 +469,12 @@
       <div>
         <div style="color:var(--muted);font-size:11px;margin-bottom:4px">継続稼働時間</div>
         <div style="font-size:28px;font-weight:bold;color:var(--orange)">3.6日</div>
-        <div style="color:var(--muted);font-size:11px">(85.7h 累計)</div>
+        <div style="color:var(--muted);font-size:11px">(85.8h 累計)</div>
       </div>
 
       <div>
         <div style="color:var(--muted);font-size:11px;margin-bottom:4px">最終スキャン</div>
-        <div style="font-size:14px;font-weight:bold;color:var(--text);margin-top:8px">2026-05-18 06:26</div>
+        <div style="font-size:14px;font-weight:bold;color:var(--text);margin-top:8px">2026-05-18 06:28</div>
         <div style="color:var(--muted);font-size:11px">UTC</div>
       </div>
 
@@ -463,7 +482,7 @@
     
     <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);
                 display:flex;gap:24px;flex-wrap:wrap;font-size:11px;color:var(--muted)">
-      <span>📊 24h 合計スキャン数: <strong style="color:var(--text)">572,800</strong> 市場</span>
+      <span>📊 24h 合計スキャン数: <strong style="color:var(--text)">572,700</strong> 市場</span>
       <span>⚡ エッジ検知率: <strong style="color:var(--green)">0.00%</strong> / サイクル</span>
       <span>🔄 1分あたり: <strong style="color:var(--text)">4.0</strong> サイクル</span>
     </div>
@@ -494,7 +513,7 @@
     </div>
     <div class="stat-card">
       <div class="label">DBスナップショット</div>
-      <div class="value">475,220</div>
+      <div class="value">475,920</div>
       <div class="sub">market_snapshots rows</div>
     </div>
     <div class="stat-card">
@@ -852,6 +871,26 @@
       </h3>
       <p style="color:var(--muted);font-size:11px;margin-bottom:12px;line-height:1.7">システムを止めずに稼働させ「世界の歪み方」の統計を取る。お金は1円もリスクにさらさない。EAでいうデモ口座フォワードテスト。</p>
       
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>論理裁定ペア偽陽性排除（方向正規化・信頼度0.95厳格化・クロス日程フィルター）</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>AIペア検出頻度最適化（15分→24時間・余分なAPI呼び出し削除・_last_questions再利用）</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>_prev_prices未使用ID自動刈り取り・期限切れキャッシュのDB自動削除</span>
+      </div>
+      
+      <div class="task done">
+        <span class="icon">✅</span>
+        <span>オーダーブック鮮度チェック（5秒超古い板データを自動除外・book_age_ms表示）</span>
+      </div>
+      
       <div class="task ">
         <span class="icon">⬜</span>
         <span>24時間連続稼働時のWSL/Pythonメモリ監視（gc.collect()が効いているか）</span>
@@ -873,9 +912,9 @@
       </div>
       
       <div class="progress-bar">
-        <div class="progress-fill" style="width:0%"></div>
+        <div class="progress-fill" style="width:50%"></div>
       </div>
-      <div class="pct">0/4 — 0%</div>
+      <div class="pct">4/8 — 50%</div>
     </div>
     
     
@@ -995,21 +1034,21 @@
   <div class="section-title">ボラティリティ特異点検知履歴（最新8件）</div>
   <div class="log-box">
     
-    <div class="log-line vol">2026-05-18 15:26:29 UTC | VOLATILITY_SINGULARITY | Will the price of Bitcoin be above $76,000 on May  | ΔP=-7.07% (急落) | YES=0.7755 | cycle=40</div>
+    <div class="log-line vol">2026-05-18 15:28:14 UTC | VOLATILITY_SINGULARITY | Iran closes its airspace by May 18? | ΔP=-5.63% (急落) | YES=0.0335 | cycle=47</div>
     
-    <div class="log-line vol">2026-05-18 15:26:29 UTC | VOLATILITY_SINGULARITY | Will Trump agree to Iranian enrichment of uranium  | ΔP=-8.22% (急落) | YES=0.0335 | cycle=40</div>
+    <div class="log-line vol">2026-05-18 15:28:14 UTC | VOLATILITY_SINGULARITY | Will Toulouse FC win on 2026-05-17? | ΔP=+6.40% (急騰) | YES=0.9150 | cycle=47</div>
     
-    <div class="log-line vol">2026-05-18 15:26:44 UTC | VOLATILITY_SINGULARITY | Israel x Syria security agreement by June 30? | ΔP=-4.17% (急落) | YES=0.1150 | cycle=41</div>
+    <div class="log-line vol">2026-05-18 15:28:14 UTC | VOLATILITY_SINGULARITY | Will the US confirm that aliens exist by May 31? | ΔP=-6.45% (急落) | YES=0.0145 | cycle=47</div>
     
-    <div class="log-line vol">2026-05-18 15:26:44 UTC | VOLATILITY_SINGULARITY | Will Toulouse FC win on 2026-05-17? | ΔP=+6.83% (急騰) | YES=0.8600 | cycle=41</div>
+    <div class="log-line vol">2026-05-18 15:28:14 UTC | VOLATILITY_SINGULARITY | Will the price of Bitcoin be above $82,000 on May  | ΔP=-40.00% (急落) | YES=0.0015 | cycle=47</div>
     
-    <div class="log-line vol">2026-05-18 15:26:44 UTC | VOLATILITY_SINGULARITY | Will the price of Bitcoin be above $82,000 on May  | ΔP=+66.67% (急騰) | YES=0.0025 | cycle=41</div>
+    <div class="log-line vol">2026-05-18 15:28:29 UTC | VOLATILITY_SINGULARITY | Iran closes its airspace by May 18? | ΔP=-5.63% (急落) | YES=0.0335 | cycle=48</div>
     
-    <div class="log-line vol">2026-05-18 15:26:44 UTC | VOLATILITY_SINGULARITY | Will Bitcoin reach $85,000 in May? | ΔP=-6.90% (急落) | YES=0.1350 | cycle=41</div>
+    <div class="log-line vol">2026-05-18 15:28:29 UTC | VOLATILITY_SINGULARITY | Will Toulouse FC win on 2026-05-17? | ΔP=+6.40% (急騰) | YES=0.9150 | cycle=48</div>
     
-    <div class="log-line vol">2026-05-18 15:26:44 UTC | VOLATILITY_SINGULARITY | Will the price of Bitcoin be above $76,000 on May  | ΔP=-7.07% (急落) | YES=0.7755 | cycle=41</div>
+    <div class="log-line vol">2026-05-18 15:28:29 UTC | VOLATILITY_SINGULARITY | Will the US confirm that aliens exist by May 31? | ΔP=-6.45% (急落) | YES=0.0145 | cycle=48</div>
     
-    <div class="log-line vol">2026-05-18 15:26:44 UTC | VOLATILITY_SINGULARITY | Will Trump agree to Iranian enrichment of uranium  | ΔP=-8.22% (急落) | YES=0.0335 | cycle=41</div>
+    <div class="log-line vol">2026-05-18 15:28:29 UTC | VOLATILITY_SINGULARITY | Will the price of Bitcoin be above $82,000 on May  | ΔP=-40.00% (急落) | YES=0.0015 | cycle=48</div>
     
   </div>
   
@@ -1025,66 +1064,152 @@
   <div class="section-title">AI異常分析レポート（直近8件）</div>
   
   <div class="anomaly-card">
-    <div class="ts">2026-05-18 06:26:32 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
-    <div class="q">Will the price of Bitcoin be above $76,000 on May 18?</div>
-    <div class="body">The most likely cause is a sudden negative news event, such as a major regulatory announcement (e.g., an SEC enforcement action or a critical court ruling) or a significant sell-off in Bitcoin spot markets triggered by a large holder or exchange moving coins. Alternatively, a prominent figure like a government official or influential trader could have posted bearish commentary on social media, quickly shifting sentiment. A coordinated trading attack, like a large market sell order or a &#34;spoofing&#34; campaign, is less probable without a clear catalyst.</div>
+    <div class="ts">2026-05-18 06:28:32 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Iran closes its airspace by May 18?</div>
+    <div class="body">The most likely cause is a breaking news report or official statement de-escalating tensions, such as a diplomatic breakthrough or a denial of imminent airspace closure plans. A 5.6% drop in 5 minutes typically reflects a rapid information event rather than organic trading, suggesting a credible source (e.g., Reuters, state media) released contradictory signals. Coordinated trading is less plausible without a catalyst, as such a sharp move would require a clear, verifiable trigger to shift market consensus.</div>
   </div>
   
   <div class="anomaly-card">
-    <div class="ts">2026-05-18 06:26:32 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
-    <div class="q">Will Trump agree to Iranian enrichment of uranium by May 31?</div>
-    <div class="body">The most likely cause is a breaking news headline or a statement from a U.S. or Iranian official indicating a hardening of positions, such as Iran announcing new enrichment advances or the U.S. reiterating a &#34;maximum pressure&#34; stance. A coordinated sell-off by large traders reacting to a specific leak or diplomatic cable could also explain the sharp, rapid drop. A major poll showing bipartisan opposition to the deal is less probable given the speed and magnitude of the move.</div>
+    <div class="ts">2026-05-18 06:28:31 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Will the US confirm that aliens exist by May 31?</div>
+    <div class="body">The most likely cause is a credible denial or clarification from a government official (e.g., NASA, Pentagon, or White House press secretary) stating that no evidence of extraterrestrial life has been confirmed, directly contradicting recent speculation. Alternatively, a scheduled report or hearing may have concluded without the anticipated disclosure, deflating the market. A coordinated sell-off by large traders exploiting the lack of imminent news is less probable given the sudden, sustained nature of the drop.</div>
   </div>
   
   <div class="anomaly-card">
-    <div class="ts">2026-05-18 06:26:32 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
-    <div class="q">Will Toulouse FC win on 2026-05-17?</div>
-    <div class="body">The most likely cause is a breaking news event, such as a key injury or suspension for Toulouse&#39;s opponent, or a positive update on a star player&#39;s return for Toulouse, leaked via a local sports journalist or club social media. A rapid 6.8% move in five minutes typically reflects a single, credible information release rather than organic sentiment or coordinated trading, which would be slower or more erratic. This could also stem from a major betting line shift or a viral clip of a pre-match press conference hinting at tactical changes.</div>
-  </div>
-  
-  <div class="anomaly-card">
-    <div class="ts">2026-05-18 06:26:32 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="ts">2026-05-18 06:28:31 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
     <div class="q">Will the price of Bitcoin be above $82,000 on May 18?</div>
-    <div class="body">The most likely cause is a major breaking news event, such as a leaked SEC approval of a spot Bitcoin ETF or a surprise endorsement from a prominent financial institution, which would trigger a rapid wave of algorithmic and retail buying. Alternatively, a false or prematurely reported headline from a credible source (e.g., Bloomberg terminal or Reuters) could have sparked the surge before being corrected. Coordinated trading alone is less plausible given the speed and magnitude, as it would require a massive, synchronized order flow unlikely to occur without a catalyst.</div>
+    <div class="body">The most likely cause is a sudden negative news event, such as a major regulatory crackdown (e.g., the SEC filing charges against a major exchange) or a significant on-chain security incident (e.g., a large hack or exploit). This would trigger a rapid sell-off in the spot market, instantly repricing the prediction market as traders update their probability estimates for Bitcoin staying above $82,000.</div>
   </div>
   
   <div class="anomaly-card">
-    <div class="ts">2026-05-18 06:26:31 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
-    <div class="q">Will Bitcoin reach $85,000 in May?</div>
-    <div class="body">The most likely cause is a negative macroeconomic news release or regulatory development, such as a hawkish Federal Reserve statement or a crackdown announcement from a major jurisdiction like the SEC or China, which spooked traders into rapidly selling Bitcoin-related prediction contracts. Alternatively, a large whale or institutional trader may have executed a coordinated sell order to close a significant YES position, triggering a cascade of stop-losses and algorithmic liquidations in a low-liquidity window.</div>
+    <div class="ts">2026-05-18 06:28:31 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Will Toulouse FC win on 2026-05-17?</div>
+    <div class="body">The most likely cause is a breaking news event, such as a key injury or suspension for Toulouse&#39;s opponent, or a leaked team lineup showing Toulouse&#39;s strongest starting XI. Alternatively, a credible insider tip or a major sports news outlet publishing a favorable statistical analysis could trigger a rapid, informed buying spree. Coordinated trading is less plausible given the specific date and the typical reaction time to concrete information in sports markets.</div>
   </div>
   
   <div class="anomaly-card">
-    <div class="ts">2026-05-18 06:26:31 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
-    <div class="q">Israel x Syria security agreement by June 30?</div>
-    <div class="body">A sudden 4.2% drop in five minutes most likely reflects a breaking news event, such as a leaked diplomatic cable or a statement from a senior Israeli or Syrian official ruling out negotiations, or a report of a new military escalation along the border. Coordinated trading or a social media rumor could cause a smaller move, but a drop of this speed and magnitude typically requires a credible, market-moving headline.</div>
+    <div class="ts">2026-05-18 06:28:17 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Iran closes its airspace by May 18?</div>
+    <div class="body">A sudden 5.6% drop likely reflects a specific piece of breaking news or a credible social media report suggesting de-escalation, such as a diplomatic signal from Iran or a statement from a key official indicating they will not close airspace. Coordinated trading is less probable given the precision of the move, which aligns with a rapid information update rather than a gradual sell-off. The most plausible cause is a news wire or official tweet contradicting earlier closure fears, triggering a swift repricing of the risk.</div>
   </div>
   
   <div class="anomaly-card">
-    <div class="ts">2026-05-18 06:26:17 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
-    <div class="q">Will Bitcoin reach $85,000 in May?</div>
-    <div class="body">The most likely cause is a sudden negative news event, such as a regulatory crackdown announcement (e.g., SEC enforcement action) or a major exchange outage/hack, which rapidly shifted market sentiment. Alternatively, a large whale or institutional trader executing a coordinated sell-off of YES shares could have triggered the sharp drop, especially if it coincided with a broader crypto market sell-off. A specific poll or on-chain data release showing diminished demand for Bitcoin in May would be a less probable but plausible trigger.</div>
+    <div class="ts">2026-05-18 06:28:17 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Will the US confirm that aliens exist by May 31?</div>
+    <div class="body">The most likely cause is a coordinated sell-off or profit-taking by large traders following a leaked or unsubstantiated rumor that a key government report on UAPs (Unidentified Aerial Phenomena) will be delayed or watered down, triggering a cascade of stop-loss orders. Alternatively, a high-profile skeptic or government official may have posted a dismissive statement on social media, causing a rapid reassessment of the market&#39;s near-term probability. The speed and magnitude suggest a discrete information event rather than organic drift.</div>
   </div>
   
   <div class="anomaly-card">
-    <div class="ts">2026-05-18 06:26:17 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
-    <div class="q">Israel x Syria security agreement by June 30?</div>
-    <div class="body">A sudden 4.2% drop in five minutes likely reflects a breaking news event, such as a statement from Israeli or Syrian officials denying negotiations or a reported military escalation (e.g., a cross-border strike or clash). Coordinated trading is less probable given the speed and specificity of the move, while a poll release would be unusual for this geopolitical market. The most plausible trigger is a credible media report or official denial that directly undermines the probability of a security agreement by the deadline.</div>
+    <div class="ts">2026-05-18 06:28:17 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Will the price of Bitcoin be above $82,000 on May 18?</div>
+    <div class="body">The most likely cause is a sudden negative news event, such as a major regulatory crackdown (e.g., the SEC filing charges against a key crypto exchange) or a significant technical failure like a large-scale hack or exchange outage. This would trigger a sharp sell-off in Bitcoin&#39;s spot price, rapidly repricing the prediction market as traders update their probability estimates for the May 18 threshold. Alternatively, a false rumor or coordinated whale sell-off could have the same effect, but breaking news is the most common driver of such a swift, sustained price drop.</div>
   </div>
   
+  <div class="anomaly-card">
+    <div class="ts">2026-05-18 06:28:16 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Will Toulouse FC win on 2026-05-17?</div>
+    <div class="body">The most likely cause is a breaking news event, such as a key injury or suspension for Toulouse FC&#39;s opponent, or a positive update on a star Toulouse player returning from injury. Alternatively, a leaked team lineup or a major betting syndicate placing large, coordinated buy orders could trigger the sudden price surge. A viral social media post from a credible insider or club account would also fit the rapid, high-impact movement.</div>
+  </div>
+  
+  
+
+  <!-- ── Changelog ── -->
+  <div class="section-title">更新履歴（Changelog）</div>
+  
+  <div class="cl-card">
+    <div class="cl-meta">
+      <span class="cl-date">2026-05-18</span>
+      <span class="cl-tag cl-tag-red">BUG FIX</span>
+    </div>
+    <div class="cl-body">
+      <h4>論理裁定ペア偽陽性の完全排除</h4>
+      <ul>
+        
+        <li>DeepSeekが返すクロス日程BTCペア（conf=0.9）を信頼度閾値0.95でフィルタリング</li>
+        
+        <li>_clean_pairs() をキャッシュ読み込み時にも適用（旧キャッシュが閾値変更を無視する問題を修正）</li>
+        
+        <li>_normalize_direction() 追加：AIがdeadline型ペアのA/Bを逆にする誤りを正規化（例：政権崩壊5月末→6月末の向き修正）</li>
+        
+        <li>_USER_TEMPLATE 改善：「B=早期/高閾値、A=後期/低閾値」の方向例を明示。クロス日程の無効例も追記</li>
+        
+      </ul>
+    </div>
+  </div>
+  
+  <div class="cl-card">
+    <div class="cl-meta">
+      <span class="cl-date">2026-05-18</span>
+      <span class="cl-tag cl-tag-accent">OPTIMIZE</span>
+    </div>
+    <div class="cl-body">
+      <h4>AIペア検出コスト最適化（DeepSeek API呼び出し削減）</h4>
+      <ul>
+        
+        <li>AI_REFRESH_INTERVAL_CYCLES: 60（15分）→ 5760（24時間）に変更</li>
+        
+        <li>毎リフレッシュごとの fetch_active_markets() 余分呼び出しを廃止</li>
+        
+        <li>_last_questions グローバルを導入：各サイクルで更新し、24h トリガー時に再利用</li>
+        
+        <li>SQLite ai_pair_cache の24h TTLと整合し、DeepSeek API は実質1日1回のみ呼び出し</li>
+        
+      </ul>
+    </div>
+  </div>
+  
+  <div class="cl-card">
+    <div class="cl-meta">
+      <span class="cl-date">2026-05-18</span>
+      <span class="cl-tag cl-tag-accent">OPTIMIZE</span>
+    </div>
+    <div class="cl-body">
+      <h4>メモリ・DB肥大化対策</h4>
+      <ul>
+        
+        <li>_prev_prices の未使用市場IDを毎サイクル自動刈り取り（_price_historyと同タイミング）</li>
+        
+        <li>database.py に cleanup_expired_pair_cache() を追加：TTL切れエントリをSQLiteから自動削除</li>
+        
+        <li>日次メンテナンス (do_daily_maintenance) に期限切れキャッシュ削除を組み込み</li>
+        
+      </ul>
+    </div>
+  </div>
+  
+  <div class="cl-card">
+    <div class="cl-meta">
+      <span class="cl-date">2026-05-18</span>
+      <span class="cl-tag cl-tag-yellow">SECURITY</span>
+    </div>
+    <div class="cl-body">
+      <h4>オーダーブック鮮度チェック（実弾投入前提の安全対策）</h4>
+      <ul>
+        
+        <li>STALE_BOOK_SECS = 5.0 定数を orderbook.py に追加</li>
+        
+        <li>fetch_depth() でPolymarket CLOBの timestamp フィールドを検証：5秒超の古い板データは None を返しスキップ</li>
+        
+        <li>DepthSnapshot に book_age_ms フィールドを追加：端末表示に板鮮度（ms）を可視化</li>
+        
+        <li>タイムスタンプが返ってこない場合はフォールバック（板データなし扱いではなく処理続行）</li>
+        
+      </ul>
+    </div>
+  </div>
   
 
   <!-- ── Last log line ── -->
   <div class="section-title">最終ログ行</div>
   <div class="log-box">
-    <div class="log-line">2026-05-18 15:26:44 UTC | VOLATILITY_SINGULARITY | Will Trump agree to Iranian enrichment of uranium  | ΔP=-8.22% (急落) | YES=0.0335 | cycle=41</div>
+    <div class="log-line">2026-05-18 15:28:32 UTC | SINGULARITY_ANALYSIS | Iran closes its airspace by May 18? | The most likely cause is a breaking news report or official statement de-escalating tensions, such a</div>
   </div>
 
 </main>
 
 <footer>
   <span>PROJECT VILLE v3.1 &nbsp;—&nbsp; Polymarket Simulation Engine</span>
-  <span>DB: Connected &nbsp;|&nbsp; 2026-05-18 06:26:44 UTC</span>
+  <span>DB: Connected &nbsp;|&nbsp; 2026-05-18 06:28:35 UTC</span>
 </footer>
 
 </body>

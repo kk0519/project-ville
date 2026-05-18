@@ -136,6 +136,10 @@ MILESTONES = [
         "title": "無人フォワードテスト（現在地）",
         "summary": "システムを止めずに稼働させ「世界の歪み方」の統計を取る。お金は1円もリスクにさらさない。EAでいうデモ口座フォワードテスト。",
         "tasks": [
+            ("論理裁定ペア偽陽性排除（方向正規化・信頼度0.95厳格化・クロス日程フィルター）", True),
+            ("AIペア検出頻度最適化（15分→24時間・余分なAPI呼び出し削除・_last_questions再利用）", True),
+            ("_prev_prices未使用ID自動刈り取り・期限切れキャッシュのDB自動削除", True),
+            ("オーダーブック鮮度チェック（5秒超古い板データを自動除外・book_age_ms表示）", True),
             ("24時間連続稼働時のWSL/Pythonメモリ監視（gc.collect()が効いているか）", False),
             ("Discord通知の頻度が適切か（ノイズなく本当に動いた時だけ鳴るか）の確認", False),
             ("経済指標発表時・週末スポーツイベント時の市場の動きとDeepSeek事後推論ログの精査", False),
@@ -174,6 +178,57 @@ MILESTONES = [
         "tasks": [
             ("板の厚み（マーケットデプス）監視機能追加（1,000万円注文による価格影響チェック）", False),
             ("複数アカウントまたは複数取引所への資金分散アルゴリズムの実実装", False),
+        ],
+    },
+]
+
+# ── Changelog ────────────────────────────────────────────────────
+CHANGELOG = [
+    {
+        "date": "2026-05-18",
+        "tag": "BUG FIX",
+        "tag_color": "red",
+        "title": "論理裁定ペア偽陽性の完全排除",
+        "changes": [
+            "DeepSeekが返すクロス日程BTCペア（conf=0.9）を信頼度閾値0.95でフィルタリング",
+            "_clean_pairs() をキャッシュ読み込み時にも適用（旧キャッシュが閾値変更を無視する問題を修正）",
+            "_normalize_direction() 追加：AIがdeadline型ペアのA/Bを逆にする誤りを正規化（例：政権崩壊5月末→6月末の向き修正）",
+            "_USER_TEMPLATE 改善：「B=早期/高閾値、A=後期/低閾値」の方向例を明示。クロス日程の無効例も追記",
+        ],
+    },
+    {
+        "date": "2026-05-18",
+        "tag": "OPTIMIZE",
+        "tag_color": "accent",
+        "title": "AIペア検出コスト最適化（DeepSeek API呼び出し削減）",
+        "changes": [
+            "AI_REFRESH_INTERVAL_CYCLES: 60（15分）→ 5760（24時間）に変更",
+            "毎リフレッシュごとの fetch_active_markets() 余分呼び出しを廃止",
+            "_last_questions グローバルを導入：各サイクルで更新し、24h トリガー時に再利用",
+            "SQLite ai_pair_cache の24h TTLと整合し、DeepSeek API は実質1日1回のみ呼び出し",
+        ],
+    },
+    {
+        "date": "2026-05-18",
+        "tag": "OPTIMIZE",
+        "tag_color": "accent",
+        "title": "メモリ・DB肥大化対策",
+        "changes": [
+            "_prev_prices の未使用市場IDを毎サイクル自動刈り取り（_price_historyと同タイミング）",
+            "database.py に cleanup_expired_pair_cache() を追加：TTL切れエントリをSQLiteから自動削除",
+            "日次メンテナンス (do_daily_maintenance) に期限切れキャッシュ削除を組み込み",
+        ],
+    },
+    {
+        "date": "2026-05-18",
+        "tag": "SECURITY",
+        "tag_color": "yellow",
+        "title": "オーダーブック鮮度チェック（実弾投入前提の安全対策）",
+        "changes": [
+            "STALE_BOOK_SECS = 5.0 定数を orderbook.py に追加",
+            "fetch_depth() でPolymarket CLOBの timestamp フィールドを検証：5秒超の古い板データは None を返しスキップ",
+            "DepthSnapshot に book_age_ms フィールドを追加：端末表示に板鮮度（ms）を可視化",
+            "タイムスタンプが返ってこない場合はフォールバック（板データなし扱いではなく処理続行）",
         ],
     },
 ]
@@ -517,6 +572,25 @@ HTML = r"""<!DOCTYPE html>
   /* No-data */
   .no-data { color: var(--muted); padding: 24px; text-align: center; font-size: 12px; }
 
+  /* Changelog */
+  .cl-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px 20px; margin-bottom: 10px;
+    display: grid; grid-template-columns: 90px 1fr; gap: 16px;
+  }
+  .cl-meta { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+  .cl-date { color: var(--muted); font-size: 11px; }
+  .cl-tag  {
+    display: inline-block; padding: 2px 9px; border-radius: 20px;
+    font-size: 10px; font-weight: bold; letter-spacing: .5px;
+  }
+  .cl-tag-red    { background: #4d1f1f; color: var(--red); }
+  .cl-tag-accent { background: #0d2e28; color: var(--accent); }
+  .cl-tag-yellow { background: #3d3110; color: var(--yellow); }
+  .cl-body h4 { font-size: 13px; color: var(--text); margin-bottom: 8px; }
+  .cl-body ul { padding-left: 16px; }
+  .cl-body li { color: var(--muted); font-size: 12px; line-height: 1.8; }
+
   /* Footer */
   footer {
     margin: 40px 32px 24px; color: var(--muted); font-size: 11px;
@@ -832,6 +906,25 @@ HTML = r"""<!DOCTYPE html>
   {% endfor %}
   {% endif %}
 
+  <!-- ── Changelog ── -->
+  <div class="section-title">更新履歴（Changelog）</div>
+  {% for cl in changelog %}
+  <div class="cl-card">
+    <div class="cl-meta">
+      <span class="cl-date">{{ cl.date }}</span>
+      <span class="cl-tag cl-tag-{{ cl.tag_color }}">{{ cl.tag }}</span>
+    </div>
+    <div class="cl-body">
+      <h4>{{ cl.title }}</h4>
+      <ul>
+        {% for item in cl.changes %}
+        <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endfor %}
+
   <!-- ── Last log line ── -->
   <div class="section-title">最終ログ行</div>
   <div class="log-box">
@@ -853,7 +946,10 @@ HTML = r"""<!DOCTYPE html>
 @app.route("/")
 def index():
     data = get_dashboard_data()
-    return render_template_string(HTML, milestones=MILESTONES, data=data, current_phase=CURRENT_PHASE)
+    return render_template_string(
+        HTML, milestones=MILESTONES, data=data,
+        current_phase=CURRENT_PHASE, changelog=CHANGELOG
+    )
 
 
 @app.route("/api/data")

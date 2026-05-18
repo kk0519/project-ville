@@ -30,7 +30,8 @@ from modules.orderbook    import (fetch_depth, parse_clob_token_id,
 from modules.stats        import Stats, TradeRecord
 from modules.database     import (init_db, save_snapshots_bulk, save_edge_event,
                                   save_trade, save_anomaly_analysis,
-                                  cleanup_old_snapshots, get_total_record_count)
+                                  cleanup_old_snapshots, cleanup_expired_pair_cache,
+                                  get_total_record_count)
 from modules.ai_analyst   import find_related_pairs, analyze_price_spike
 from modules.notifier     import (notify_edge_anomaly, notify_triangle_anomaly,
                                    notify_volatility_singularity, notify_startup,
@@ -43,9 +44,9 @@ BOLD   = "\033[1m";   RESET  = "\033[0m"
 
 # ── Config ───────────────────────────────────────────────────────
 CAPITAL_JPY        = 100_000
-EDGE_THRESHOLD     = 0.02
+EDGE_THRESHOLD     = 0.005   # 0.5%: Polymarket sums cluster at 1.000; 2% never fires
 POLL_INTERVAL      = 15        # seconds between cycles (target: ~15s total cycle time)
-MARKET_LIMIT       = 50        # markets per cycle
+MARKET_LIMIT       = 100       # markets per cycle (100 captures BTC threshold clusters)
 LATENCY_EXPIRY_MS  = 2_000
 LOG_FILE           = Path(__file__).parent / "ville_backtest.log"
 
@@ -53,7 +54,7 @@ VOLATILITY_THRESHOLD        = 0.03   # 3% price change triggers singularity
 VOLATILITY_WINDOW_CYCLES    = 20     # ~5 min at 15s/cycle (was 5 @ 60s)
 HEARTBEAT_INTERVAL_CYCLES   = 240    # ~1 hour at 15s/cycle (was 60 @ 60s)
 MAINTENANCE_INTERVAL_CYCLES = 5760   # ~24 hours at 15s/cycle (was 1440 @ 60s)
-AI_REFRESH_INTERVAL_CYCLES  = 240    # refresh AI pairs every ~1 hour
+AI_REFRESH_INTERVAL_CYCLES  = 5760   # refresh AI pairs every ~24h (market structure rarely changes faster)
 VERBOSE_MARKETS             = False  # True = print all 50 markets; False = edges only
 PHASE13_CAPITAL_JPY         = 10_000_000   # 1,000万円 scale capital model
 PHASE13_DEPTH_ENABLED       = True         # fetch order book depth for edge markets
@@ -78,6 +79,9 @@ _prev_prices:  dict[str, float] = {}
 # AI pairs — updated in background thread; main loop reads without blocking
 _ai_pairs:      list[dict]       = []
 _ai_pairs_lock: threading.Lock  = threading.Lock()
+# Questions snapshot from the last completed cycle — reused by the 24h AI refresh
+# trigger so no extra fetch_active_markets() call is needed.
+_last_questions: list[str]       = []
 
 
 # ── Helpers ──────────────────────────────────────────────────────
@@ -177,7 +181,7 @@ def _web_sync_worker():
     from jinja2 import Environment
 
     # Lazy import to avoid circular dep at module level
-    from ville_web import MILESTONES, CURRENT_PHASE, HTML, get_dashboard_data
+    from ville_web import MILESTONES, CURRENT_PHASE, CHANGELOG, HTML, get_dashboard_data
 
     docs_path = Path(__file__).parent / "docs" / "index.html"
 
@@ -188,7 +192,8 @@ def _web_sync_worker():
             env  = Environment(autoescape=True)
             env.globals["max"] = max
             html = env.from_string(HTML).render(
-                milestones=MILESTONES, data=data, current_phase=CURRENT_PHASE
+                milestones=MILESTONES, data=data,
+                current_phase=CURRENT_PHASE, changelog=CHANGELOG
             )
             new_bytes = html.encode("utf-8")
 
@@ -275,9 +280,12 @@ def do_daily_maintenance():
     print(f"  ✓ GC実行完了（メモリ解放）")
     deleted = cleanup_old_snapshots(days_to_keep=7)
     print(f"  ✓ DBクリーンアップ完了: {deleted}件の古いスナップショットを集約・削除")
+    expired_cache = cleanup_expired_pair_cache()
+    if expired_cache:
+        print(f"  ✓ AIキャッシュ期限切れ削除: {expired_cache}件")
     logging.info(
         f"MAINTENANCE | log_archived={archived} | gc=done | "
-        f"snapshots_deleted={deleted}"
+        f"snapshots_deleted={deleted} | cache_expired_deleted={expired_cache}"
     )
     print(f"  {CYAN}[MAINTENANCE] 完了{RESET}\n")
 
@@ -392,22 +400,31 @@ def run_cycle(cycle: int) -> int:
     # ── Batch-insert all snapshots in ONE transaction ──────────────
     save_snapshots_bulk(snap_rows)
 
-    # ── Prune stale market IDs from price history ─────────────────
-    # Polymarket retires old markets; stale IDs would grow _price_history unboundedly.
+    # ── Prune stale market IDs and update question snapshot ──────────
+    # Retired market IDs grow _price_history and _prev_prices unboundedly without pruning.
+    global _last_questions
     active_ids = {md.market_id for md in markets}
     for sid in set(_price_history.keys()) - active_ids:
         del _price_history[sid]
+    for sid in set(_prev_prices.keys()) - active_ids:
+        del _prev_prices[sid]
+    # Refresh snapshot for 24h AI refresh trigger (avoids extra API call)
+    _last_questions = [md.question for md in markets]
 
     # ── Build related-pair ID set from AI analyst results ─────────
+    # Stores directed tuple (id_broader, id_narrower):
+    #   "market_a" = broader (implied, e.g. BTC>$76k)
+    #   "market_b" = narrower (implicant, e.g. BTC>$82k) — "B implies A"
+    # Direction is preserved to avoid false-positive violation detection.
     q_to_id = {md.question: md.market_id for md in markets}
-    related_id_pairs: set[frozenset[str]] = set()
+    related_id_pairs: set[tuple[str, str]] = set()
     with _ai_pairs_lock:
         current_ai_pairs = list(_ai_pairs)
     for pair in current_ai_pairs:
-        id_a = q_to_id.get(pair.get("market_a", ""))
-        id_b = q_to_id.get(pair.get("market_b", ""))
-        if id_a and id_b:
-            related_id_pairs.add(frozenset([id_a, id_b]))
+        id_a = q_to_id.get(pair.get("market_a", ""))  # broader
+        id_b = q_to_id.get(pair.get("market_b", ""))  # narrower
+        if id_a and id_b and id_a != id_b:
+            related_id_pairs.add((id_a, id_b))
 
     # ── Market scan: edge detection first-pass ────────────────────
     # Pre-build token_id map once (clob IDs come from raw Gamma API data)
@@ -514,26 +531,24 @@ def run_cycle(cycle: int) -> int:
     )
 
     # ── Logical inconsistency sweep (AI-identified pairs only) ────
+    # Only check in the CORRECT direction: (id_broader, id_narrower).
+    # Violation = narrower market YES price > broader market YES price.
     if related_id_pairs:
         id_to_md = {md.market_id: md for md in markets}
-        checked  = set()
-        for pair_ids in related_id_pairs:
-            ids = list(pair_ids)
-            ma  = id_to_md.get(ids[0])
-            mb  = id_to_md.get(ids[1])
+        checked: set[tuple[str, str]] = set()
+        for id_broader, id_narrower in related_id_pairs:
+            if (id_broader, id_narrower) in checked:
+                continue
+            checked.add((id_broader, id_narrower))
+            ma = id_to_md.get(id_broader)
+            mb = id_to_md.get(id_narrower)
             if not ma or not mb:
                 continue
-            pkey = frozenset([ma.market_id, mb.market_id])
-            if pkey in checked:
-                continue
-            checked.add(pkey)
-            for x, y in [(ma, mb), (mb, ma)]:
-                arb = check_logical_inconsistency(x, y)
-                if arb:
-                    arb_found += 1
-                    alert(f"論理矛盾(手数料控除後): {arb['strategy']}")
-                    logging.info(f"ARB | {json.dumps(arb, ensure_ascii=False)}")
-                    break
+            arb = check_logical_inconsistency(ma, mb)
+            if arb:
+                arb_found += 1
+                alert(f"論理矛盾(手数料控除後): {arb['strategy']}")
+                logging.info(f"ARB | {json.dumps(arb, ensure_ascii=False)}")
 
     # ── Triangle arbitrage scan (related pairs only, fee-adjusted) ─
     triangles = scan_triangle_arb(markets, min_compound=0.005,
@@ -612,8 +627,12 @@ def main():
         except KeyboardInterrupt:
             raise
         except Exception as e:
+            import traceback, sys
+            tb_str = traceback.format_exc()
             print(f"  {RED}[ERROR] サイクル#{cycle} 例外: {e} — 次サイクルで再試行{RESET}")
-            logging.error(f"CYCLE_ERROR | cycle={cycle} | {e}")
+            sys.stderr.write(f"CYCLE_ERROR cycle={cycle}: {e}\n{tb_str}\n")
+            sys.stderr.flush()
+            logging.error(f"CYCLE_ERROR | cycle={cycle} | {e}\n{tb_str}")
 
         # ── Heartbeat (every ~1 hour) ─────────────────────────────
         if cycle % HEARTBEAT_INTERVAL_CYCLES == 0:
@@ -623,14 +642,14 @@ def main():
         if cycle % MAINTENANCE_INTERVAL_CYCLES == 0:
             do_daily_maintenance()
 
-        # ── Periodic AI pair refresh (every ~1 hour, background) ──
-        if cycle % AI_REFRESH_INTERVAL_CYCLES == 0:
-            raw_q = fetch_active_markets(limit=MARKET_LIMIT)
-            if raw_q:
-                qs = [m.get("question", "") for m in raw_q if m.get("question")]
-                threading.Thread(
-                    target=_refresh_ai_pairs_bg, args=(qs,), daemon=True
-                ).start()
+        # ── Periodic AI pair refresh (every ~24h, background) ────────
+        # Uses _last_questions (updated each cycle) — no extra API call needed.
+        # SQLite cache handles 24h TTL; this trigger ensures in-memory _ai_pairs
+        # is refreshed after new markets appear (e.g. new BTC threshold listings).
+        if cycle % AI_REFRESH_INTERVAL_CYCLES == 0 and _last_questions:
+            threading.Thread(
+                target=_refresh_ai_pairs_bg, args=(_last_questions,), daemon=True
+            ).start()
 
         # ── Adaptive sleep: subtract cycle execution time ─────────
         elapsed = time.time() - t_cycle_start

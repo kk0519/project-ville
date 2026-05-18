@@ -240,6 +240,16 @@ def save_pair_cache(cache_key: str, pairs: list[dict], ttl_hours: int = 24):
                   (cache_key, json.dumps(pairs, ensure_ascii=False), now_str, expires))
 
 
+def cleanup_expired_pair_cache() -> int:
+    """Delete ai_pair_cache entries past their TTL. Returns count deleted."""
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    with _cursor() as c:
+        deleted = c.execute(
+            "DELETE FROM ai_pair_cache WHERE expires_at < ?", (now,)
+        ).rowcount
+    return deleted
+
+
 def get_latest_cached_pairs(cache_key: str) -> list[dict] | None:
     """Stale-cache fallback: return most recent entry regardless of TTL.
 
