@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>⚡ VILLE Dashboard</title>
+<title>⚡ WILLE（ヴィレ）ダッシュボード</title>
 <style>
   :root {
     --bg:      #0d1117;
@@ -216,12 +216,12 @@
 
 <header>
   <div>
-    <h1>⚡ PROJECT VILLE</h1>
+    <h1>⚡ WILLE（ヴィレ）</h1>
     <div class="sub">自律哨戒システム — Polymarket予測市場監視エンジン v3.1</div>
   </div>
   <div class="ts">
     <span class="dot"></span>LIVE &nbsp;|&nbsp;
-    更新: 2026-05-27 11:01:34 UTC &nbsp;|&nbsp;
+    更新: 2026-06-11 12:28:01 UTC &nbsp;|&nbsp;
     次回リフレッシュ: <span id="countdown">60s</span>
   </div>
 </header>
@@ -232,7 +232,7 @@
   <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px 28px;margin-bottom:24px;border-left:3px solid var(--accent);">
     <div style="font-size:13px;color:var(--accent);font-weight:bold;margin-bottom:10px;letter-spacing:1px;">MISSION</div>
     <div style="font-size:14px;color:var(--text);line-height:1.9;">
-      <b>PROJECT VILLE</b> は、Polymarket（予測市場）における <b>価格非効率（アービトラージ機会）</b> を自律的に探知・分析する哨戒システムです。<br>
+      <b>WILLE（ヴィレ）</b> は、Polymarket（予測市場）における <b>価格非効率（アービトラージ機会）</b> を自律的に探知・分析する哨戒システムです。<br>
       <span style="color:var(--muted);">
         YES価格 + NO価格 の合計が1.0を大きく下回る市場（エッジ検出）を常時スキャンし、
         AI（DeepSeek）による論理的整合性ペア分析・Kelly基準ポジションサイジング・オーダーブック深度評価（Phase 13）を組み合わせて
@@ -426,25 +426,25 @@
 
       <div>
         <div style="color:var(--muted);font-size:11px;margin-bottom:4px">スキャンサイクル / 時</div>
-        <div style="font-size:28px;font-weight:bold;color:var(--accent)">0</div>
+        <div style="font-size:28px;font-weight:bold;color:var(--accent)">235</div>
         <div style="color:var(--muted);font-size:11px">cycles / hour</div>
       </div>
 
       <div>
         <div style="color:var(--muted);font-size:11px;margin-bottom:4px">スキャンサイクル / 日</div>
-        <div style="font-size:28px;font-weight:bold;color:var(--accent)">0</div>
+        <div style="font-size:28px;font-weight:bold;color:var(--accent)">5,753</div>
         <div style="color:var(--muted);font-size:11px">cycles / 24h</div>
       </div>
 
       <div>
         <div style="color:var(--muted);font-size:11px;margin-bottom:4px">監視市場数 / サイクル</div>
-        <div style="font-size:28px;font-weight:bold;color:var(--text)">0</div>
+        <div style="font-size:28px;font-weight:bold;color:var(--text)">100</div>
         <div style="color:var(--muted);font-size:11px">markets / cycle</div>
       </div>
 
       <div>
         <div style="color:var(--muted);font-size:11px;margin-bottom:4px">平均サイクル間隔</div>
-        <div style="font-size:28px;font-weight:bold;color:var(--text)">0</div>
+        <div style="font-size:28px;font-weight:bold;color:var(--text)">15</div>
         <div style="color:var(--muted);font-size:11px">seconds / cycle</div>
       </div>
 
@@ -468,16 +468,23 @@
 
       <div>
         <div style="color:var(--muted);font-size:11px;margin-bottom:4px">継続稼働時間</div>
-        <div style="font-size:28px;font-weight:bold;color:var(--orange)">—</div>
-        <div style="color:var(--muted);font-size:11px">(0.0h 累計)</div>
+        <div style="font-size:28px;font-weight:bold;color:var(--orange)">7.4日</div>
+        <div style="color:var(--muted);font-size:11px">(178.0h 累計)</div>
       </div>
 
       <div>
         <div style="color:var(--muted);font-size:11px;margin-bottom:4px">最終スキャン</div>
-        <div style="font-size:14px;font-weight:bold;color:var(--text);margin-top:8px">—</div>
+        <div style="font-size:14px;font-weight:bold;color:var(--text);margin-top:8px">2026-06-11 12:28</div>
         <div style="color:var(--muted);font-size:11px">UTC</div>
       </div>
 
+    </div>
+    
+    <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);
+                display:flex;gap:24px;flex-wrap:wrap;font-size:11px;color:var(--muted)">
+      <span>📊 24h 合計スキャン数: <strong style="color:var(--text)">575,300</strong> 市場</span>
+      <span>⚡ エッジ検知率: <strong style="color:var(--green)">0.00%</strong> / サイクル</span>
+      <span>🔄 1分あたり: <strong style="color:var(--text)">3.9</strong> サイクル</span>
     </div>
     
   </div>
@@ -506,17 +513,17 @@
     </div>
     <div class="stat-card">
       <div class="label">DBスナップショット</div>
-      <div class="value">0</div>
+      <div class="value">4,259,300</div>
       <div class="sub">market_snapshots rows</div>
     </div>
     <div class="stat-card">
       <div class="label">累計仮想取引数</div>
-      <div class="value">0</div>
+      <div class="value">3</div>
       <div class="sub">virtual_trades rows</div>
     </div>
     <div class="stat-card">
       <div class="label">AI分析件数</div>
-      <div class="value">0</div>
+      <div class="value">8</div>
       <div class="sub">anomaly_analysis (直近)</div>
     </div>
   </div>
@@ -1014,7 +1021,19 @@
   <div class="section-title">ハートビート履歴（最新6件）</div>
   <div class="log-box">
     
-      <div class="no-data">ハートビートなし（ville_main.py 未起動 or 60サイクル未満）</div>
+      
+      <div class="log-line hb">2026-06-11 15:25:32 UTC | [HEARTBEAT] Active Markets: 100, Avg Latency: 121ms, DB Records: 4114903, Stats Trades: 0</div>
+      
+      <div class="log-line hb">2026-06-11 16:25:33 UTC | [HEARTBEAT] Active Markets: 100, Avg Latency: 141ms, DB Records: 4138903, Stats Trades: 0</div>
+      
+      <div class="log-line hb">2026-06-11 17:25:34 UTC | [HEARTBEAT] Active Markets: 100, Avg Latency: 141ms, DB Records: 4162903, Stats Trades: 0</div>
+      
+      <div class="log-line hb">2026-06-11 18:25:33 UTC | [HEARTBEAT] Active Markets: 100, Avg Latency: 133ms, DB Records: 4186903, Stats Trades: 0</div>
+      
+      <div class="log-line hb">2026-06-11 19:25:36 UTC | [HEARTBEAT] Active Markets: 100, Avg Latency: 133ms, DB Records: 4210903, Stats Trades: 0</div>
+      
+      <div class="log-line hb">2026-06-11 20:25:34 UTC | [HEARTBEAT] Active Markets: 100, Avg Latency: 125ms, DB Records: 4234903, Stats Trades: 0</div>
+      
     
   </div>
 
@@ -1023,21 +1042,21 @@
   <div class="section-title">ボラティリティ特異点検知履歴（最新8件）</div>
   <div class="log-box">
     
-    <div class="log-line vol">2026-05-27 19:51:45 UTC | VOLATILITY_SINGULARITY | Roland Garros ATP: Alejandro Davidovich Fokina vs  | ΔP=+19.63% (急騰) | YES=0.6400 | cycle=11690</div>
+    <div class="log-line vol">2026-06-11 21:27:46 UTC | VOLATILITY_SINGULARITY | Will Roberto Sánchez Palomino win the 2026 Peruvia | ΔP=+7.14% (急騰) | YES=0.0300 | cycle=40</div>
     
-    <div class="log-line vol">2026-05-27 19:51:45 UTC | VOLATILITY_SINGULARITY | Will Trump pardon Tiger Woods by June 30? | ΔP=+4.00% (急騰) | YES=0.0130 | cycle=11690</div>
+    <div class="log-line vol">2026-06-11 21:27:46 UTC | VOLATILITY_SINGULARITY | Counter-Strike: MOUZ vs Legacy (BO3) - IEM Cologne | ΔP=+5.41% (急騰) | YES=0.5850 | cycle=40</div>
     
-    <div class="log-line vol">2026-05-27 19:52:00 UTC | VOLATILITY_SINGULARITY | Roland Garros ATP: Federico Cina vs Jesper de Jong | ΔP=+11.11% (急騰) | YES=0.0500 | cycle=11691</div>
+    <div class="log-line vol">2026-06-11 21:27:46 UTC | VOLATILITY_SINGULARITY | US-Iran nuclear deal by June 30? | ΔP=-4.88% (急落) | YES=0.1950 | cycle=40</div>
     
-    <div class="log-line vol">2026-05-27 19:52:00 UTC | VOLATILITY_SINGULARITY | Roland Garros ATP: Alejandro Davidovich Fokina vs  | ΔP=+19.63% (急騰) | YES=0.6400 | cycle=11691</div>
+    <div class="log-line vol">2026-06-11 21:27:46 UTC | VOLATILITY_SINGULARITY | ODI Series Bangladesh vs Australia: Bangladesh vs  | ΔP=+8.00% (急騰) | YES=0.9450 | cycle=40</div>
     
-    <div class="log-line vol">2026-05-27 19:52:00 UTC | VOLATILITY_SINGULARITY | Will Trump pardon Tiger Woods by June 30? | ΔP=+4.00% (急騰) | YES=0.0130 | cycle=11691</div>
+    <div class="log-line vol">2026-06-11 21:28:02 UTC | VOLATILITY_SINGULARITY | Will Roberto Sánchez Palomino win the 2026 Peruvia | ΔP=+7.14% (急騰) | YES=0.0300 | cycle=41</div>
     
-    <div class="log-line vol">2026-05-27 19:52:15 UTC | VOLATILITY_SINGULARITY | Roland Garros ATP: Federico Cina vs Jesper de Jong | ΔP=+11.11% (急騰) | YES=0.0500 | cycle=11692</div>
+    <div class="log-line vol">2026-06-11 21:28:02 UTC | VOLATILITY_SINGULARITY | Counter-Strike: MOUZ vs Legacy (BO3) - IEM Cologne | ΔP=+5.41% (急騰) | YES=0.5850 | cycle=41</div>
     
-    <div class="log-line vol">2026-05-27 19:52:15 UTC | VOLATILITY_SINGULARITY | Roland Garros ATP: Alejandro Davidovich Fokina vs  | ΔP=+19.63% (急騰) | YES=0.6400 | cycle=11692</div>
+    <div class="log-line vol">2026-06-11 21:28:02 UTC | VOLATILITY_SINGULARITY | US-Iran nuclear deal by June 30? | ΔP=-4.88% (急落) | YES=0.1950 | cycle=41</div>
     
-    <div class="log-line vol">2026-05-27 19:52:15 UTC | VOLATILITY_SINGULARITY | Will Trump pardon Tiger Woods by June 30? | ΔP=+4.00% (急騰) | YES=0.0130 | cycle=11692</div>
+    <div class="log-line vol">2026-06-11 21:28:02 UTC | VOLATILITY_SINGULARITY | ODI Series Bangladesh vs Australia: Bangladesh vs  | ΔP=+8.00% (急騰) | YES=0.9450 | cycle=41</div>
     
   </div>
   
@@ -1049,6 +1068,57 @@
   
 
   <!-- ── AI Anomaly Analyses ── -->
+  
+  <div class="section-title">AI異常分析レポート（直近8件）</div>
+  
+  <div class="anomaly-card">
+    <div class="ts">2026-06-11 12:28:02 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Will Roberto Sánchez Palomino win the 2026 Peruvian presidential election?</div>
+    <div class="body">No API key — 7.1% surged: likely breaking news or sudden liquidity shift.</div>
+  </div>
+  
+  <div class="anomaly-card">
+    <div class="ts">2026-06-11 12:28:02 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">US-Iran nuclear deal by June 30?</div>
+    <div class="body">No API key — 4.9% dropped: likely breaking news or sudden liquidity shift.</div>
+  </div>
+  
+  <div class="anomaly-card">
+    <div class="ts">2026-06-11 12:28:02 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Counter-Strike: MOUZ vs Legacy (BO3) - IEM Cologne Major Stage 3</div>
+    <div class="body">No API key — 5.4% surged: likely breaking news or sudden liquidity shift.</div>
+  </div>
+  
+  <div class="anomaly-card">
+    <div class="ts">2026-06-11 12:28:02 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">ODI Series Bangladesh vs Australia: Bangladesh vs Australia</div>
+    <div class="body">No API key — 8.0% surged: likely breaking news or sudden liquidity shift.</div>
+  </div>
+  
+  <div class="anomaly-card">
+    <div class="ts">2026-06-11 12:27:46 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Counter-Strike: MOUZ vs Legacy (BO3) - IEM Cologne Major Stage 3</div>
+    <div class="body">No API key — 5.4% surged: likely breaking news or sudden liquidity shift.</div>
+  </div>
+  
+  <div class="anomaly-card">
+    <div class="ts">2026-06-11 12:27:46 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">ODI Series Bangladesh vs Australia: Bangladesh vs Australia</div>
+    <div class="body">No API key — 8.0% surged: likely breaking news or sudden liquidity shift.</div>
+  </div>
+  
+  <div class="anomaly-card">
+    <div class="ts">2026-06-11 12:27:46 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">US-Iran nuclear deal by June 30?</div>
+    <div class="body">No API key — 4.9% dropped: likely breaking news or sudden liquidity shift.</div>
+  </div>
+  
+  <div class="anomaly-card">
+    <div class="ts">2026-06-11 12:27:46 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Will Roberto Sánchez Palomino win the 2026 Peruvian presidential election?</div>
+    <div class="body">No API key — 7.1% surged: likely breaking news or sudden liquidity shift.</div>
+  </div>
+  
   
 
   <!-- ── Changelog ── -->
@@ -1140,14 +1210,17 @@
   <!-- ── Last log line ── -->
   <div class="section-title">最終ログ行</div>
   <div class="log-box">
-    <div class="log-line">sqlite3.OperationalError: unable to open database file</div>
+    <div class="log-line">2026-06-11 21:28:02 UTC | SINGULARITY_ANALYSIS | Will Roberto Sánchez Palomino win the 2026 Peruvia | No API key — 7.1% surged: likely breaking news or sudden liquidity shift.</div>
   </div>
 
 </main>
 
 <footer>
-  <span>PROJECT VILLE v3.1 &nbsp;—&nbsp; Polymarket Simulation Engine</span>
-  <span>DB: Connected &nbsp;|&nbsp; 2026-05-27 11:01:34 UTC</span>
+  <span>WILLE（ヴィレ） v3.1 &nbsp;—&nbsp; Polymarket Simulation Engine</span>
+  <span>DB:
+    接続OK
+    
+    &nbsp;|&nbsp; 2026-06-11 12:28:01 UTC</span>
 </footer>
 
 </body>
