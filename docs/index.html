@@ -221,7 +221,7 @@
   </div>
   <div class="ts">
     <span class="dot"></span>LIVE &nbsp;|&nbsp;
-    更新: 2026-07-29 17:41:25 UTC &nbsp;|&nbsp;
+    更新: 2026-07-29 17:51:29 UTC &nbsp;|&nbsp;
     次回リフレッシュ: <span id="countdown">60s</span>
   </div>
 </header>
@@ -432,7 +432,7 @@
 
       <div>
         <div style="color:var(--muted);font-size:11px;margin-bottom:4px">スキャンサイクル / 日</div>
-        <div style="font-size:28px;font-weight:bold;color:var(--accent)">5,759</div>
+        <div style="font-size:28px;font-weight:bold;color:var(--accent)">5,760</div>
         <div style="color:var(--muted);font-size:11px">cycles / 24h</div>
       </div>
 
@@ -451,8 +451,8 @@
       <div>
         <div style="color:var(--muted);font-size:11px;margin-bottom:4px">エッジ検知 / 時</div>
         <div style="font-size:28px;font-weight:bold;
-          color:var(--muted)">
-          0
+          color:var(--green)">
+          20
         </div>
         <div style="color:var(--muted);font-size:11px">detections / hour</div>
       </div>
@@ -460,8 +460,8 @@
       <div>
         <div style="color:var(--muted);font-size:11px;margin-bottom:4px">エッジ検知 / 日</div>
         <div style="font-size:28px;font-weight:bold;
-          color:var(--muted)">
-          0
+          color:var(--green)">
+          20
         </div>
         <div style="color:var(--muted);font-size:11px">detections / 24h</div>
       </div>
@@ -469,12 +469,12 @@
       <div>
         <div style="color:var(--muted);font-size:11px;margin-bottom:4px">継続稼働時間</div>
         <div style="font-size:28px;font-weight:bold;color:var(--orange)">5.1日</div>
-        <div style="color:var(--muted);font-size:11px">(122.7h 累計)</div>
+        <div style="color:var(--muted);font-size:11px">(122.9h 累計)</div>
       </div>
 
       <div>
         <div style="color:var(--muted);font-size:11px;margin-bottom:4px">最終スキャン</div>
-        <div style="font-size:14px;font-weight:bold;color:var(--text);margin-top:8px">2026-07-29 17:41</div>
+        <div style="font-size:14px;font-weight:bold;color:var(--text);margin-top:8px">2026-07-29 17:51</div>
         <div style="color:var(--muted);font-size:11px">UTC</div>
       </div>
 
@@ -482,8 +482,8 @@
     
     <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);
                 display:flex;gap:24px;flex-wrap:wrap;font-size:11px;color:var(--muted)">
-      <span>📊 24h 合計スキャン数: <strong style="color:var(--text)">575,900</strong> 市場</span>
-      <span>⚡ エッジ検知率: <strong style="color:var(--green)">0.00%</strong> / サイクル</span>
+      <span>📊 24h 合計スキャン数: <strong style="color:var(--text)">576,000</strong> 市場</span>
+      <span>⚡ エッジ検知率: <strong style="color:var(--green)">0.35%</strong> / サイクル</span>
       <span>🔄 1分あたり: <strong style="color:var(--text)">4.0</strong> サイクル</span>
     </div>
     
@@ -494,31 +494,31 @@
   <div class="stat-grid">
     <div class="stat-card">
       <div class="label">今日のエッジ検知</div>
-      <div class="value">0</div>
+      <div class="value">20</div>
       <div class="sub">edge events / today</div>
     </div>
     <div class="stat-card">
       <div class="label">今日の仮想取引</div>
-      <div class="value">0</div>
+      <div class="value">20</div>
       <div class="sub">
         勝率 0%
       </div>
     </div>
     <div class="stat-card">
       <div class="label">今日の累計EV</div>
-      <div class="value edge-pos">
-        ¥0
+      <div class="value edge-neg">
+        ¥-34,000
       </div>
       <div class="sub">expected value</div>
     </div>
     <div class="stat-card">
       <div class="label">DBスナップショット</div>
-      <div class="value">2,893,700</div>
+      <div class="value">2,897,800</div>
       <div class="sub">market_snapshots rows</div>
     </div>
     <div class="stat-card">
       <div class="label">累計仮想取引数</div>
-      <div class="value">83</div>
+      <div class="value">103</div>
       <div class="sub">virtual_trades rows</div>
     </div>
     <div class="stat-card">
@@ -1028,6 +1028,8 @@
       
       <div class="log-line hb">2026-07-30 01:42:57 UTC | [HEARTBEAT] Active Markets: 100, Avg Latency: 569ms, DB Records: 2870483, Stats Trades: 20</div>
       
+      <div class="log-line hb">2026-07-30 02:42:57 UTC | [HEARTBEAT] Active Markets: 100, Avg Latency: 523ms, DB Records: 2894483, Stats Trades: 20</div>
+      
     
   </div>
 
@@ -1036,21 +1038,21 @@
   <div class="section-title">ボラティリティ特異点検知履歴（最新8件）</div>
   <div class="log-box">
     
-    <div class="log-line vol">2026-07-30 02:41:12 UTC | VOLATILITY_SINGULARITY | Israel closes its airspace by July 31? | ΔP=+7.30% (急騰) | YES=0.0735 | cycle=18233</div>
+    <div class="log-line vol">2026-07-30 02:51:27 UTC | VOLATILITY_SINGULARITY | Arizona Diamondbacks vs. Pittsburgh Pirates: O/U 8 | ΔP=+6.98% (急騰) | YES=0.2300 | cycle=18274</div>
     
-    <div class="log-line vol">2026-07-30 02:41:12 UTC | VOLATILITY_SINGULARITY | Will Bitcoin reach $67,500 in July? | ΔP=+6.67% (急騰) | YES=0.0800 | cycle=18233</div>
+    <div class="log-line vol">2026-07-30 02:51:27 UTC | VOLATILITY_SINGULARITY | Will KKS Lech Poznań win on 2026-07-29? | ΔP=-10.26% (急落) | YES=0.1750 | cycle=18274</div>
     
-    <div class="log-line vol">2026-07-30 02:41:12 UTC | VOLATILITY_SINGULARITY | Mubadala Citi DC Open: Aleksandar Vukic vs Lorenzo | ΔP=-6.06% (急落) | YES=0.1550 | cycle=18233</div>
+    <div class="log-line vol">2026-07-30 02:51:27 UTC | VOLATILITY_SINGULARITY | Will Bitcoin dip to $60,000 in July? | ΔP=-8.70% (急落) | YES=0.1050 | cycle=18274</div>
     
-    <div class="log-line vol">2026-07-30 02:41:12 UTC | VOLATILITY_SINGULARITY | Spread: Philadelphia Phillies (-1.5) | ΔP=-3.07% (急落) | YES=0.7900 | cycle=18233</div>
+    <div class="log-line vol">2026-07-30 02:51:27 UTC | VOLATILITY_SINGULARITY | Will Bitcoin reach $70,000 in July? | ΔP=+12.50% (急騰) | YES=0.0135 | cycle=18274</div>
     
-    <div class="log-line vol">2026-07-30 02:41:12 UTC | VOLATILITY_SINGULARITY | Counter-Strike: Nemiga vs TDK (BO3) - CIS LAN Cham | ΔP=+25.93% (急騰) | YES=0.1700 | cycle=18233</div>
+    <div class="log-line vol">2026-07-30 02:51:27 UTC | VOLATILITY_SINGULARITY | U.S. anti-cartel operation outside of the U.S. by  | ΔP=+3.03% (急騰) | YES=0.4765 | cycle=18274</div>
     
-    <div class="log-line vol">2026-07-30 02:41:12 UTC | VOLATILITY_SINGULARITY | Will Bitcoin dip to $52,500 in July? | ΔP=+16.67% (急騰) | YES=0.0035 | cycle=18233</div>
+    <div class="log-line vol">2026-07-30 02:51:27 UTC | VOLATILITY_SINGULARITY | Spread: Philadelphia Phillies (-1.5) | ΔP=+32.56% (急騰) | YES=0.8550 | cycle=18274</div>
     
-    <div class="log-line vol">2026-07-30 02:41:12 UTC | VOLATILITY_SINGULARITY | Baltimore Orioles vs. Detroit Tigers | ΔP=-5.19% (急落) | YES=0.3650 | cycle=18233</div>
+    <div class="log-line vol">2026-07-30 02:51:27 UTC | VOLATILITY_SINGULARITY | Will Bitcoin dip to $62,500 in July? | ΔP=-6.84% (急落) | YES=0.4560 | cycle=18274</div>
     
-    <div class="log-line vol">2026-07-30 02:41:12 UTC | VOLATILITY_SINGULARITY | Will Elon Musk post 200-219 tweets from July 24 to | ΔP=-6.19% (急落) | YES=0.0530 | cycle=18233</div>
+    <div class="log-line vol">2026-07-30 02:51:27 UTC | VOLATILITY_SINGULARITY | Valorant: Gentle Mates vs Team Vitality (BO3) - VC | ΔP=-6.82% (急落) | YES=0.2050 | cycle=18274</div>
     
   </div>
   
@@ -1077,373 +1079,22 @@
     <tbody>
       
       <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-28 08:08</td>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-29 17:49</td>
         <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Bitcoin Up or Down on July 28?
+          Arizona Diamondbacks vs. Pittsburgh Pirates
         </td>
-        <td>0.0950</td>
-        <td>0.9000</td>
+        <td>0.7350</td>
+        <td>0.2550</td>
         <td class="edge-pos">
-          0.9950
+          0.9900
         </td>
-        <td class="edge-neg">-0.0050</td>
+        <td class="edge-neg">-0.0100</td>
         <td class="edge-neg">
           ¥-2,000
         </td>
         <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">1589ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-28 08:08</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Bitcoin Up or Down on July 28?
-        </td>
-        <td>0.0950</td>
-        <td>0.9000</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">1214ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-28 08:08</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Bitcoin Up or Down on July 28?
-        </td>
-        <td>0.0950</td>
-        <td>0.9000</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">1146ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-28 08:07</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Bitcoin Up or Down on July 28?
-        </td>
-        <td>0.0950</td>
-        <td>0.9000</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">500ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-28 08:07</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Bitcoin Up or Down on July 28?
-        </td>
-        <td>0.0950</td>
-        <td>0.9000</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">1242ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-28 08:07</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Bitcoin Up or Down on July 28?
-        </td>
-        <td>0.0950</td>
-        <td>0.9000</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">476ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-28 08:07</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Bitcoin Up or Down on July 28?
-        </td>
-        <td>0.0950</td>
-        <td>0.9000</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">1157ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-28 08:06</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Bitcoin Up or Down on July 28?
-        </td>
-        <td>0.0950</td>
-        <td>0.9000</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">2034ms</td>
-        <td>
-          
-          <span class="badge badge-exp">EXPIRED</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-28 08:06</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Bitcoin Up or Down on July 28?
-        </td>
-        <td>0.0950</td>
-        <td>0.9000</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">1154ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-28 08:06</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Bitcoin Up or Down on July 28?
-        </td>
-        <td>0.0950</td>
-        <td>0.9000</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">556ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-28 08:06</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Bitcoin Up or Down on July 28?
-        </td>
-        <td>0.0950</td>
-        <td>0.9000</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">1031ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-28 08:05</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Bitcoin Up or Down on July 28?
-        </td>
-        <td>0.0950</td>
-        <td>0.9000</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">794ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-28 08:05</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Bitcoin Up or Down on July 28?
-        </td>
-        <td>0.0950</td>
-        <td>0.9000</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">228ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-28 08:05</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Bitcoin Up or Down on July 28?
-        </td>
-        <td>0.0950</td>
-        <td>0.9000</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
+          <span class="badge badge-no">
+            NO
           </span>
         </td>
         <td style="color:var(--muted)">50ms</td>
@@ -1455,25 +1106,376 @@
       </tr>
       
       <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-28 08:05</td>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-29 17:49</td>
         <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Bitcoin Up or Down on July 28?
+          Arizona Diamondbacks vs. Pittsburgh Pirates
         </td>
-        <td>0.0950</td>
-        <td>0.9000</td>
+        <td>0.7350</td>
+        <td>0.2550</td>
         <td class="edge-pos">
-          0.9950
+          0.9900
         </td>
-        <td class="edge-neg">-0.0050</td>
+        <td class="edge-neg">-0.0100</td>
         <td class="edge-neg">
           ¥-2,000
         </td>
         <td>
-          <span class="badge badge-yes">
-            YES
+          <span class="badge badge-no">
+            NO
           </span>
         </td>
-        <td style="color:var(--muted)">585ms</td>
+        <td style="color:var(--muted)">166ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-29 17:49</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Arizona Diamondbacks vs. Pittsburgh Pirates
+        </td>
+        <td>0.7350</td>
+        <td>0.2550</td>
+        <td class="edge-pos">
+          0.9900
+        </td>
+        <td class="edge-neg">-0.0100</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">50ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-29 17:49</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Arizona Diamondbacks vs. Pittsburgh Pirates
+        </td>
+        <td>0.7350</td>
+        <td>0.2550</td>
+        <td class="edge-pos">
+          0.9900
+        </td>
+        <td class="edge-neg">-0.0100</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">509ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-29 17:48</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Arizona Diamondbacks vs. Pittsburgh Pirates
+        </td>
+        <td>0.7350</td>
+        <td>0.2550</td>
+        <td class="edge-pos">
+          0.9900
+        </td>
+        <td class="edge-neg">-0.0100</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">1084ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-29 17:48</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Arizona Diamondbacks vs. Pittsburgh Pirates
+        </td>
+        <td>0.7350</td>
+        <td>0.2550</td>
+        <td class="edge-pos">
+          0.9900
+        </td>
+        <td class="edge-neg">-0.0100</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">1384ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-29 17:48</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Arizona Diamondbacks vs. Pittsburgh Pirates
+        </td>
+        <td>0.7350</td>
+        <td>0.2550</td>
+        <td class="edge-pos">
+          0.9900
+        </td>
+        <td class="edge-neg">-0.0100</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">973ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-29 17:48</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Arizona Diamondbacks vs. Pittsburgh Pirates
+        </td>
+        <td>0.7350</td>
+        <td>0.2550</td>
+        <td class="edge-pos">
+          0.9900
+        </td>
+        <td class="edge-neg">-0.0100</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">2362ms</td>
+        <td>
+          
+          <span class="badge badge-exp">EXPIRED</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-29 17:47</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Arizona Diamondbacks vs. Pittsburgh Pirates
+        </td>
+        <td>0.7350</td>
+        <td>0.2550</td>
+        <td class="edge-pos">
+          0.9900
+        </td>
+        <td class="edge-neg">-0.0100</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">307ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-29 17:47</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Arizona Diamondbacks vs. Pittsburgh Pirates
+        </td>
+        <td>0.7350</td>
+        <td>0.2550</td>
+        <td class="edge-pos">
+          0.9900
+        </td>
+        <td class="edge-neg">-0.0100</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">721ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-29 17:47</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Arizona Diamondbacks vs. Pittsburgh Pirates
+        </td>
+        <td>0.7350</td>
+        <td>0.2550</td>
+        <td class="edge-pos">
+          0.9900
+        </td>
+        <td class="edge-neg">-0.0100</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">2526ms</td>
+        <td>
+          
+          <span class="badge badge-exp">EXPIRED</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-29 17:47</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Arizona Diamondbacks vs. Pittsburgh Pirates
+        </td>
+        <td>0.7350</td>
+        <td>0.2550</td>
+        <td class="edge-pos">
+          0.9900
+        </td>
+        <td class="edge-neg">-0.0100</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">50ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-29 17:46</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Arizona Diamondbacks vs. Pittsburgh Pirates
+        </td>
+        <td>0.7350</td>
+        <td>0.2550</td>
+        <td class="edge-pos">
+          0.9900
+        </td>
+        <td class="edge-neg">-0.0100</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">613ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-29 17:46</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Arizona Diamondbacks vs. Pittsburgh Pirates
+        </td>
+        <td>0.7350</td>
+        <td>0.2550</td>
+        <td class="edge-pos">
+          0.9900
+        </td>
+        <td class="edge-neg">-0.0100</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">496ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-29 17:46</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Arizona Diamondbacks vs. Pittsburgh Pirates
+        </td>
+        <td>0.7350</td>
+        <td>0.2550</td>
+        <td class="edge-pos">
+          0.9900
+        </td>
+        <td class="edge-neg">-0.0100</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">1199ms</td>
         <td>
           
           <span class="badge badge-ok">OK</span>
@@ -1491,50 +1493,50 @@
   <div class="section-title">AI異常分析レポート（直近8件）</div>
   
   <div class="anomaly-card">
-    <div class="ts">2026-07-29 17:41:15 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
-    <div class="q">Will NVIDIA be the largest company in the world by market cap on July 31?</div>
-    <div class="body">Analysis unavailable: groq:http429;gemini:http429;openrouter:http429;deepseek:http402</div>
-  </div>
-  
-  <div class="anomaly-card">
-    <div class="ts">2026-07-29 17:41:12 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
-    <div class="q">Baltimore Orioles vs. Detroit Tigers</div>
+    <div class="ts">2026-07-29 17:51:27 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Will Bitcoin reach $70,000 in July?</div>
     <div class="body">Analysis unavailable: groq:cooldown;gemini:cooldown;openrouter:cooldown;deepseek:cooldown</div>
   </div>
   
   <div class="anomaly-card">
-    <div class="ts">2026-07-29 17:41:12 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
-    <div class="q">Will Bitcoin dip to $52,500 in July?</div>
-    <div class="body">Analysis unavailable: groq:cooldown;gemini:cooldown;openrouter:cooldown;deepseek:cooldown</div>
-  </div>
-  
-  <div class="anomaly-card">
-    <div class="ts">2026-07-29 17:41:12 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
-    <div class="q">Will Bitcoin reach $67,500 in July?</div>
-    <div class="body">Analysis unavailable: groq:cooldown;gemini:cooldown;openrouter:cooldown;deepseek:cooldown</div>
-  </div>
-  
-  <div class="anomaly-card">
-    <div class="ts">2026-07-29 17:41:12 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
-    <div class="q">Will Elon Musk post 200-219 tweets from July 24 to July 31, 2026?</div>
-    <div class="body">Analysis unavailable: groq:cooldown;gemini:cooldown;openrouter:cooldown;deepseek:cooldown</div>
-  </div>
-  
-  <div class="anomaly-card">
-    <div class="ts">2026-07-29 17:41:12 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
-    <div class="q">Mubadala Citi DC Open: Aleksandar Vukic vs Lorenzo Musetti</div>
-    <div class="body">Analysis unavailable: groq:cooldown;gemini:cooldown;openrouter:cooldown;deepseek:cooldown</div>
-  </div>
-  
-  <div class="anomaly-card">
-    <div class="ts">2026-07-29 17:41:12 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
-    <div class="q">Counter-Strike: Nemiga vs TDK (BO3) - CIS LAN Championship Playoffs</div>
-    <div class="body">Analysis unavailable: groq:cooldown;gemini:cooldown;openrouter:cooldown;deepseek:cooldown</div>
-  </div>
-  
-  <div class="anomaly-card">
-    <div class="ts">2026-07-29 17:41:12 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="ts">2026-07-29 17:51:27 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
     <div class="q">Arizona Diamondbacks vs. Pittsburgh Pirates: O/U 8.5</div>
+    <div class="body">Analysis unavailable: groq:cooldown;gemini:cooldown;openrouter:cooldown;deepseek:cooldown</div>
+  </div>
+  
+  <div class="anomaly-card">
+    <div class="ts">2026-07-29 17:51:27 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Will Bitcoin dip to $60,000 in July?</div>
+    <div class="body">Analysis unavailable: groq:cooldown;gemini:cooldown;openrouter:cooldown;deepseek:cooldown</div>
+  </div>
+  
+  <div class="anomaly-card">
+    <div class="ts">2026-07-29 17:51:27 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">U.S. anti-cartel operation outside of the U.S. by July 31?</div>
+    <div class="body">Analysis unavailable: groq:cooldown;gemini:cooldown;openrouter:cooldown;deepseek:cooldown</div>
+  </div>
+  
+  <div class="anomaly-card">
+    <div class="ts">2026-07-29 17:51:27 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Atlanta Braves vs. New York Mets</div>
+    <div class="body">Analysis unavailable: groq:cooldown;gemini:cooldown;openrouter:cooldown;deepseek:cooldown</div>
+  </div>
+  
+  <div class="anomaly-card">
+    <div class="ts">2026-07-29 17:51:27 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Baltimore Orioles vs. Detroit Tigers: O/U 7.5</div>
+    <div class="body">Analysis unavailable: groq:cooldown;gemini:cooldown;openrouter:cooldown;deepseek:cooldown</div>
+  </div>
+  
+  <div class="anomaly-card">
+    <div class="ts">2026-07-29 17:51:27 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Will KKS Lech Poznań win on 2026-07-29?</div>
+    <div class="body">Analysis unavailable: groq:cooldown;gemini:cooldown;openrouter:cooldown;deepseek:cooldown</div>
+  </div>
+  
+  <div class="anomaly-card">
+    <div class="ts">2026-07-29 17:51:27 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Spread: Philadelphia Phillies (-1.5)</div>
     <div class="body">Analysis unavailable: groq:cooldown;gemini:cooldown;openrouter:cooldown;deepseek:cooldown</div>
   </div>
   
@@ -1629,7 +1631,7 @@
   <!-- ── Last log line ── -->
   <div class="section-title">最終ログ行</div>
   <div class="log-box">
-    <div class="log-line">2026-07-30 02:41:15 UTC | SINGULARITY_ANALYSIS | Will NVIDIA be the largest company in the world by | Analysis unavailable: groq:http429;gemini:http429;openrouter:http429;deepseek:http402</div>
+    <div class="log-line">2026-07-30 02:51:28 UTC | AI_ROUTER | fail provider=gemini http=429</div>
   </div>
 
 </main>
@@ -1639,7 +1641,7 @@
   <span>DB:
     接続OK
     
-    &nbsp;|&nbsp; 2026-07-29 17:41:25 UTC</span>
+    &nbsp;|&nbsp; 2026-07-29 17:51:29 UTC</span>
 </footer>
 
 </body>
