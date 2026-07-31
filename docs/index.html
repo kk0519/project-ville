@@ -221,7 +221,7 @@
   </div>
   <div class="ts">
     <span class="dot"></span>LIVE &nbsp;|&nbsp;
-    更新: 2026-07-31 00:43:44 UTC &nbsp;|&nbsp;
+    更新: 2026-07-31 00:53:48 UTC &nbsp;|&nbsp;
     次回リフレッシュ: <span id="countdown">60s</span>
   </div>
 </header>
@@ -426,7 +426,7 @@
 
       <div>
         <div style="color:var(--muted);font-size:11px;margin-bottom:4px">スキャンサイクル / 時</div>
-        <div style="font-size:28px;font-weight:bold;color:var(--accent)">240</div>
+        <div style="font-size:28px;font-weight:bold;color:var(--accent)">239</div>
         <div style="color:var(--muted);font-size:11px">cycles / hour</div>
       </div>
 
@@ -451,8 +451,8 @@
       <div>
         <div style="color:var(--muted);font-size:11px;margin-bottom:4px">エッジ検知 / 時</div>
         <div style="font-size:28px;font-weight:bold;
-          color:var(--muted)">
-          0
+          color:var(--green)">
+          10
         </div>
         <div style="color:var(--muted);font-size:11px">detections / hour</div>
       </div>
@@ -461,7 +461,7 @@
         <div style="color:var(--muted);font-size:11px;margin-bottom:4px">エッジ検知 / 日</div>
         <div style="font-size:28px;font-weight:bold;
           color:var(--green)">
-          20
+          30
         </div>
         <div style="color:var(--muted);font-size:11px">detections / 24h</div>
       </div>
@@ -469,12 +469,12 @@
       <div>
         <div style="color:var(--muted);font-size:11px;margin-bottom:4px">継続稼働時間</div>
         <div style="font-size:28px;font-weight:bold;color:var(--orange)">6.4日</div>
-        <div style="color:var(--muted);font-size:11px">(153.7h 累計)</div>
+        <div style="color:var(--muted);font-size:11px">(153.9h 累計)</div>
       </div>
 
       <div>
         <div style="color:var(--muted);font-size:11px;margin-bottom:4px">最終スキャン</div>
-        <div style="font-size:14px;font-weight:bold;color:var(--text);margin-top:8px">2026-07-31 00:43</div>
+        <div style="font-size:14px;font-weight:bold;color:var(--text);margin-top:8px">2026-07-31 00:53</div>
         <div style="color:var(--muted);font-size:11px">UTC</div>
       </div>
 
@@ -483,7 +483,7 @@
     <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);
                 display:flex;gap:24px;flex-wrap:wrap;font-size:11px;color:var(--muted)">
       <span>📊 24h 合計スキャン数: <strong style="color:var(--text)">575,100</strong> 市場</span>
-      <span>⚡ エッジ検知率: <strong style="color:var(--green)">0.35%</strong> / サイクル</span>
+      <span>⚡ エッジ検知率: <strong style="color:var(--green)">0.52%</strong> / サイクル</span>
       <span>🔄 1分あたり: <strong style="color:var(--text)">4.0</strong> サイクル</span>
     </div>
     
@@ -494,31 +494,31 @@
   <div class="stat-grid">
     <div class="stat-card">
       <div class="label">今日のエッジ検知</div>
-      <div class="value">0</div>
+      <div class="value">10</div>
       <div class="sub">edge events / today</div>
     </div>
     <div class="stat-card">
       <div class="label">今日の仮想取引</div>
-      <div class="value">0</div>
+      <div class="value">10</div>
       <div class="sub">
         勝率 0%
       </div>
     </div>
     <div class="stat-card">
       <div class="label">今日の累計EV</div>
-      <div class="value edge-pos">
-        ¥0
+      <div class="value edge-neg">
+        ¥-20,000
       </div>
       <div class="sub">expected value</div>
     </div>
     <div class="stat-card">
       <div class="label">DBスナップショット</div>
-      <div class="value">3,637,800</div>
+      <div class="value">3,641,800</div>
       <div class="sub">market_snapshots rows</div>
     </div>
     <div class="stat-card">
       <div class="label">累計仮想取引数</div>
-      <div class="value">123</div>
+      <div class="value">133</div>
       <div class="sub">virtual_trades rows</div>
     </div>
     <div class="stat-card">
@@ -1022,8 +1022,6 @@
   <div class="log-box">
     
       
-      <div class="log-line hb">2026-07-31 03:44:01 UTC | [HEARTBEAT] Active Markets: 100, Avg Latency: 770ms, DB Records: 3494223, Stats Trades: 60</div>
-      
       <div class="log-line hb">2026-07-31 04:44:01 UTC | [HEARTBEAT] Active Markets: 100, Avg Latency: 524ms, DB Records: 3518223, Stats Trades: 60</div>
       
       <div class="log-line hb">2026-07-31 05:44:01 UTC | [HEARTBEAT] Active Markets: 100, Avg Latency: 494ms, DB Records: 3542223, Stats Trades: 60</div>
@@ -1034,6 +1032,8 @@
       
       <div class="log-line hb">2026-07-31 08:44:21 UTC | [HEARTBEAT] Active Markets: 100, Avg Latency: 495ms, DB Records: 3614223, Stats Trades: 60</div>
       
+      <div class="log-line hb">2026-07-31 09:44:19 UTC | [HEARTBEAT] Active Markets: 100, Avg Latency: 503ms, DB Records: 3638223, Stats Trades: 60</div>
+      
     
   </div>
 
@@ -1042,21 +1042,21 @@
   <div class="section-title">ボラティリティ特異点検知履歴（最新8件）</div>
   <div class="log-box">
     
-    <div class="log-line vol">2026-07-31 09:43:34 UTC | VOLATILITY_SINGULARITY | Miami Marlins vs. New York Mets | ΔP=-6.45% (急落) | YES=0.4350 | cycle=25677</div>
+    <div class="log-line vol">2026-07-31 09:53:34 UTC | VOLATILITY_SINGULARITY | Will WTI Crude Oil (WTI) hit (HIGH) $95 in July? | ΔP=-18.75% (急落) | YES=0.0065 | cycle=25717</div>
     
-    <div class="log-line vol">2026-07-31 09:43:34 UTC | VOLATILITY_SINGULARITY | Counter-Strike: BESTIA vs Galorys (BO3) - StarLadd | ΔP=+78.46% (急騰) | YES=0.5800 | cycle=25677</div>
+    <div class="log-line vol">2026-07-31 09:53:34 UTC | VOLATILITY_SINGULARITY | Will Bitcoin dip to $62,500 in July? | ΔP=+5.77% (急騰) | YES=0.0275 | cycle=25717</div>
     
-    <div class="log-line vol">2026-07-31 09:43:34 UTC | VOLATILITY_SINGULARITY | Will Ethereum reach $2,000 in July? | ΔP=+7.69% (急騰) | YES=0.0700 | cycle=25677</div>
+    <div class="log-line vol">2026-07-31 09:53:34 UTC | VOLATILITY_SINGULARITY | The Memphis Classic: Sloane Stephens vs Darja Vidm | ΔP=-90.00% (急落) | YES=0.0005 | cycle=25717</div>
     
-    <div class="log-line vol">2026-07-31 09:43:34 UTC | VOLATILITY_SINGULARITY | Will WTI Crude Oil (WTI) hit (HIGH) $90 in July? | ΔP=-4.44% (急落) | YES=0.0430 | cycle=25677</div>
+    <div class="log-line vol">2026-07-31 09:53:34 UTC | VOLATILITY_SINGULARITY | Will Ethereum reach $2,000 in July? | ΔP=-7.14% (急落) | YES=0.0650 | cycle=25717</div>
     
-    <div class="log-line vol">2026-07-31 09:43:34 UTC | VOLATILITY_SINGULARITY | The Memphis Classic: Sloane Stephens vs Darja Vidm | ΔP=-34.15% (急落) | YES=0.1350 | cycle=25677</div>
+    <div class="log-line vol">2026-07-31 09:53:34 UTC | VOLATILITY_SINGULARITY | Will Elon Musk post 280-299 tweets from July 24 to | ΔP=+8.29% (急騰) | YES=0.0980 | cycle=25717</div>
     
-    <div class="log-line vol">2026-07-31 09:43:34 UTC | VOLATILITY_SINGULARITY | Counter-Strike: BESTIA vs Galorys - Map 2 Winner | ΔP=+82.83% (急騰) | YES=0.9050 | cycle=25677</div>
+    <div class="log-line vol">2026-07-31 09:53:34 UTC | VOLATILITY_SINGULARITY | Will Elon Musk post 240-259 tweets from July 24 to | ΔP=-9.50% (急落) | YES=0.3525 | cycle=25717</div>
     
-    <div class="log-line vol">2026-07-31 09:43:34 UTC | VOLATILITY_SINGULARITY | Vancouver: Benjamin Bonzi vs Jay Dylan Friend | ΔP=-4.88% (急落) | YES=0.5850 | cycle=25677</div>
+    <div class="log-line vol">2026-07-31 09:53:34 UTC | VOLATILITY_SINGULARITY | Will Elon Musk post 300-319 tweets from July 24 to | ΔP=+36.00% (急騰) | YES=0.0170 | cycle=25717</div>
     
-    <div class="log-line vol">2026-07-31 09:43:34 UTC | VOLATILITY_SINGULARITY | Will NVIDIA be the second-largest company in the w | ΔP=-3.43% (急落) | YES=0.2675 | cycle=25677</div>
+    <div class="log-line vol">2026-07-31 09:53:34 UTC | VOLATILITY_SINGULARITY | Valorant: 100 Thieves vs Sentinels - Map 2 Winner | ΔP=-24.39% (急落) | YES=0.4650 | cycle=25717</div>
     
   </div>
   
@@ -1081,6 +1081,276 @@
       </tr>
     </thead>
     <tbody>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-31 00:53</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Will NVIDIA be the largest company in the world by mark
+        </td>
+        <td>0.7925</td>
+        <td>0.2025</td>
+        <td class="edge-pos">
+          0.9950
+        </td>
+        <td class="edge-neg">-0.0050</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">1013ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-31 00:53</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Will NVIDIA be the largest company in the world by mark
+        </td>
+        <td>0.7925</td>
+        <td>0.2025</td>
+        <td class="edge-pos">
+          0.9950
+        </td>
+        <td class="edge-neg">-0.0050</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">50ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-31 00:53</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Will NVIDIA be the largest company in the world by mark
+        </td>
+        <td>0.7925</td>
+        <td>0.2025</td>
+        <td class="edge-pos">
+          0.9950
+        </td>
+        <td class="edge-neg">-0.0050</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">1342ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-31 00:52</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Will NVIDIA be the largest company in the world by mark
+        </td>
+        <td>0.7925</td>
+        <td>0.2025</td>
+        <td class="edge-pos">
+          0.9950
+        </td>
+        <td class="edge-neg">-0.0050</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">1385ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-31 00:52</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Will NVIDIA be the largest company in the world by mark
+        </td>
+        <td>0.7925</td>
+        <td>0.2025</td>
+        <td class="edge-pos">
+          0.9950
+        </td>
+        <td class="edge-neg">-0.0050</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">371ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-31 00:52</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Will NVIDIA be the largest company in the world by mark
+        </td>
+        <td>0.7925</td>
+        <td>0.2025</td>
+        <td class="edge-pos">
+          0.9950
+        </td>
+        <td class="edge-neg">-0.0050</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">1102ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-31 00:52</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Will NVIDIA be the largest company in the world by mark
+        </td>
+        <td>0.7925</td>
+        <td>0.2025</td>
+        <td class="edge-pos">
+          0.9950
+        </td>
+        <td class="edge-neg">-0.0050</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">637ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-31 00:51</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Will NVIDIA be the largest company in the world by mark
+        </td>
+        <td>0.7925</td>
+        <td>0.2025</td>
+        <td class="edge-pos">
+          0.9950
+        </td>
+        <td class="edge-neg">-0.0050</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">1233ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-31 00:51</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Will NVIDIA be the largest company in the world by mark
+        </td>
+        <td>0.7925</td>
+        <td>0.2025</td>
+        <td class="edge-pos">
+          0.9950
+        </td>
+        <td class="edge-neg">-0.0050</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">1207ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="white-space:nowrap;color:var(--muted)">2026-07-31 00:51</td>
+        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Will NVIDIA be the largest company in the world by mark
+        </td>
+        <td>0.7925</td>
+        <td>0.2025</td>
+        <td class="edge-pos">
+          0.9950
+        </td>
+        <td class="edge-neg">-0.0050</td>
+        <td class="edge-neg">
+          ¥-2,000
+        </td>
+        <td>
+          <span class="badge badge-no">
+            NO
+          </span>
+        </td>
+        <td style="color:var(--muted)">403ms</td>
+        <td>
+          
+          <span class="badge badge-ok">OK</span>
+          
+        </td>
+      </tr>
       
       <tr>
         <td style="white-space:nowrap;color:var(--muted)">2026-07-30 02:00</td>
@@ -1217,276 +1487,6 @@
         </td>
       </tr>
       
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-30 01:59</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Chicago Cubs vs. St. Louis Cardinals
-        </td>
-        <td>0.4700</td>
-        <td>0.5250</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">1521ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-30 01:58</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Chicago Cubs vs. St. Louis Cardinals
-        </td>
-        <td>0.4700</td>
-        <td>0.5250</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">1654ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-30 01:58</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Chicago Cubs vs. St. Louis Cardinals
-        </td>
-        <td>0.4700</td>
-        <td>0.5250</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">991ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-30 01:58</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Chicago Cubs vs. St. Louis Cardinals
-        </td>
-        <td>0.4700</td>
-        <td>0.5250</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">50ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-30 01:58</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Chicago Cubs vs. St. Louis Cardinals
-        </td>
-        <td>0.4700</td>
-        <td>0.5250</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">1775ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-30 01:57</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Chicago Cubs vs. St. Louis Cardinals
-        </td>
-        <td>0.4700</td>
-        <td>0.5250</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">1458ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-30 01:57</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Chicago Cubs vs. St. Louis Cardinals
-        </td>
-        <td>0.4700</td>
-        <td>0.5250</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">188ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-30 01:57</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Chicago Cubs vs. St. Louis Cardinals
-        </td>
-        <td>0.4700</td>
-        <td>0.5250</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">1167ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-30 01:57</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Chicago Cubs vs. St. Louis Cardinals
-        </td>
-        <td>0.4700</td>
-        <td>0.5250</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">1544ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
-      <tr>
-        <td style="white-space:nowrap;color:var(--muted)">2026-07-30 01:56</td>
-        <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          Chicago Cubs vs. St. Louis Cardinals
-        </td>
-        <td>0.4700</td>
-        <td>0.5250</td>
-        <td class="edge-pos">
-          0.9950
-        </td>
-        <td class="edge-neg">-0.0050</td>
-        <td class="edge-neg">
-          ¥-2,000
-        </td>
-        <td>
-          <span class="badge badge-yes">
-            YES
-          </span>
-        </td>
-        <td style="color:var(--muted)">1539ms</td>
-        <td>
-          
-          <span class="badge badge-ok">OK</span>
-          
-        </td>
-      </tr>
-      
     </tbody>
   </table>
   </div>
@@ -1497,50 +1497,50 @@
   <div class="section-title">AI異常分析レポート（直近8件）</div>
   
   <div class="anomaly-card">
-    <div class="ts">2026-07-31 00:43:37 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
-    <div class="q">Miami Marlins vs. New York Mets</div>
+    <div class="ts">2026-07-31 00:53:38 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">US x Iran Effective Ceasefire by July 31?</div>
     <div class="body">Analysis unavailable: groq:http429;gemini:http429;openrouter:http429;deepseek:http402</div>
   </div>
   
   <div class="anomaly-card">
-    <div class="ts">2026-07-31 00:43:37 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
-    <div class="q">Will WTI Crude Oil (WTI) hit (HIGH) $90 in July?</div>
+    <div class="ts">2026-07-31 00:53:38 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Will Donald Trump publicly insult Vladimir Putin by July 31, 2026?</div>
     <div class="body">Analysis unavailable: groq:http429;gemini:http429;openrouter:http429;deepseek:http402</div>
   </div>
   
   <div class="anomaly-card">
-    <div class="ts">2026-07-31 00:43:37 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
-    <div class="q">The Memphis Classic: Sloane Stephens vs Darja Vidmanova</div>
+    <div class="ts">2026-07-31 00:53:38 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Pittsburgh Pirates vs. Cincinnati Reds: O/U 9.5</div>
     <div class="body">Analysis unavailable: groq:http429;gemini:http429;openrouter:http429;deepseek:http402</div>
   </div>
   
   <div class="anomaly-card">
-    <div class="ts">2026-07-31 00:43:34 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="ts">2026-07-31 00:53:38 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Valorant: 100 Thieves vs Sentinels (BO3) - VCT Americas Stage 2 Group Omega</div>
+    <div class="body">Analysis unavailable: groq:http429;gemini:http429;openrouter:http429;deepseek:http402</div>
+  </div>
+  
+  <div class="anomaly-card">
+    <div class="ts">2026-07-31 00:53:38 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
     <div class="q">Counter-Strike: BESTIA vs Galorys (BO3) - StarLadder StarSeries South American Qualifier Playoffs</div>
+    <div class="body">Analysis unavailable: groq:http429;gemini:http429;openrouter:http429;deepseek:http402</div>
+  </div>
+  
+  <div class="anomaly-card">
+    <div class="ts">2026-07-31 00:53:38 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Will Apple be the largest company in the world by market cap on July 31?</div>
+    <div class="body">Analysis unavailable: groq:http429;gemini:http429;openrouter:http429;deepseek:http402</div>
+  </div>
+  
+  <div class="anomaly-card">
+    <div class="ts">2026-07-31 00:53:34 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="q">Will Ethereum reach $2,000 in July?</div>
     <div class="body">Analysis unavailable: groq:cooldown;gemini:cooldown;openrouter:cooldown;deepseek:cooldown</div>
   </div>
   
   <div class="anomaly-card">
-    <div class="ts">2026-07-31 00:43:34 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
-    <div class="q">Counter-Strike: BESTIA vs Galorys - Map 2 Winner</div>
-    <div class="body">Analysis unavailable: groq:cooldown;gemini:cooldown;openrouter:cooldown;deepseek:cooldown</div>
-  </div>
-  
-  <div class="anomaly-card">
-    <div class="ts">2026-07-31 00:43:34 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
+    <div class="ts">2026-07-31 00:53:34 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
     <div class="q">Will Bitcoin dip to $62,500 in July?</div>
-    <div class="body">Analysis unavailable: groq:cooldown;gemini:cooldown;openrouter:cooldown;deepseek:cooldown</div>
-  </div>
-  
-  <div class="anomaly-card">
-    <div class="ts">2026-07-31 00:43:34 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
-    <div class="q">Will NVIDIA be the second-largest company in the world by market cap on July 31?</div>
-    <div class="body">Analysis unavailable: groq:cooldown;gemini:cooldown;openrouter:cooldown;deepseek:cooldown</div>
-  </div>
-  
-  <div class="anomaly-card">
-    <div class="ts">2026-07-31 00:43:34 &nbsp;|&nbsp; model: deepseek-chat:volatility</div>
-    <div class="q">Vancouver: Benjamin Bonzi vs Jay Dylan Friend</div>
     <div class="body">Analysis unavailable: groq:cooldown;gemini:cooldown;openrouter:cooldown;deepseek:cooldown</div>
   </div>
   
@@ -1635,7 +1635,7 @@
   <!-- ── Last log line ── -->
   <div class="section-title">最終ログ行</div>
   <div class="log-box">
-    <div class="log-line">2026-07-31 09:43:37 UTC | SINGULARITY_ANALYSIS | Miami Marlins vs. New York Mets | Analysis unavailable: groq:http429;gemini:http429;openrouter:http429;deepseek:http402</div>
+    <div class="log-line">2026-07-31 09:53:38 UTC | SINGULARITY_ANALYSIS | US x Iran Effective Ceasefire by July 31? | Analysis unavailable: groq:http429;gemini:http429;openrouter:http429;deepseek:http402</div>
   </div>
 
 </main>
@@ -1645,7 +1645,7 @@
   <span>DB:
     接続OK
     
-    &nbsp;|&nbsp; 2026-07-31 00:43:44 UTC</span>
+    &nbsp;|&nbsp; 2026-07-31 00:53:48 UTC</span>
 </footer>
 
 </body>
